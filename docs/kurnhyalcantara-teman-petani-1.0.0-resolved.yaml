@@ -1,0 +1,462 @@
+---
+openapi: 3.0.0
+info:
+  title: Teman Petani API
+  description: API endpoint for Teman Petani
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/kurnhyalcantara/alta-airbnb-api/1.0.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /login:
+    post:
+      tags:
+      - Authentication
+      summary: User login
+      description: Authenticate a user with email and password.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        "200":
+          description: Successful login response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        "400":
+          description: Invalid request
+  /users:
+    post:
+      tags:
+      - Users
+      summary: Buat akun baru
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      responses:
+        "201":
+          description: User berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "400":
+          description: Invalid request
+  /users/profile:
+    get:
+      tags:
+      - Users
+      summary: Mendapatkan data user profile
+      description: Mendapatkan data user profile berdasarkan token
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "404":
+          description: User not found
+      security:
+      - bearerAuth: []
+    put:
+      tags:
+      - Users
+      summary: Edit data profile user
+      description: Edit data profile user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+        required: true
+      responses:
+        "200":
+          description: Berhasil memperbarui data user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        "404":
+          description: User not found
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - Users
+      summary: Delete User
+      description: Delete an existing user
+      responses:
+        "204":
+          description: User deleted successfully
+        "404":
+          description: User not found
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    UserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status:
+          type: string
+          example: success
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        fullname:
+          type: string
+          example: Kurniawan
+        email:
+          type: string
+          format: email
+          example: kurnhy@gmail.com
+        password:
+          type: string
+          format: password
+          example: supersecret
+        phone:
+          type: string
+        address:
+          type: string
+        avatar:
+          type: string
+          example: url
+        bank:
+          type: string
+          example: bri
+        noRekening:
+          type: string
+    UserGetByIdResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          example: d6b4b0d4-2c89-4597-831e-5d641f9cc821
+        fullname:
+          type: string
+          example: Kurniawan
+        email:
+          type: string
+          format: email
+          example: kurnhy@gmail.com
+        phone:
+          type: string
+        birth:
+          type: string
+          format: date
+        gender:
+          type: string
+    UserRequest:
+      type: object
+      properties:
+        fullname:
+          type: string
+          example: Kurniawan
+        email:
+          type: string
+          format: email
+          example: kurnhy@gmail.com
+        password:
+          type: string
+          format: password
+          example: supersecret
+        phone:
+          type: string
+        address:
+          type: string
+    AllUserResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Berhasil mendapatkan data user
+        data:
+          $ref: '#/components/schemas/AllUserResponse_data'
+    StayRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+        description:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        bedrooms:
+          type: integer
+        bathrooms:
+          type: integer
+        city:
+          type: string
+        tv:
+          type: number
+        wifi:
+          type: number
+        pool:
+          type: number
+        rating:
+          type: number
+          format: double
+    AddStayResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+        data:
+          $ref: '#/components/schemas/AddStayResponse_data'
+    AllStayResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/AllStayResponse_data'
+    GetStayByIdResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        data:
+          $ref: '#/components/schemas/Stay'
+    Stay:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+          format: double
+        description:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        bedrooms:
+          type: integer
+        bathrooms:
+          type: integer
+        ratings:
+          type: number
+          format: double
+        images:
+          type: array
+          items:
+            type: string
+        owner:
+          $ref: '#/components/schemas/Stay_owner'
+    ReservationRequest:
+      type: object
+      properties:
+        room_id:
+          type: integer
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+    ReservationStatusResponse:
+      type: object
+      properties:
+        room_status:
+          type: string
+    CreateReservationRequest:
+      type: object
+      properties:
+        room_id:
+          type: integer
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        credit_card:
+          $ref: '#/components/schemas/CreditCard'
+    CreditCard:
+      type: object
+      properties:
+        type:
+          type: string
+        name:
+          type: string
+        number:
+          type: string
+        cvv:
+          type: integer
+        month:
+          type: integer
+        year:
+          type: integer
+    ReservationResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/ReservationResponse_data'
+    GetReservationsResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/GetReservationsResponse_data'
+    Reservation:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        reservation_id:
+          type: integer
+        room_name:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        price:
+          type: number
+        total_price:
+          type: number
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        message:
+          type: string
+    inline_response_201:
+      type: object
+      properties:
+        status:
+          type: string
+          example: status
+        message:
+          type: string
+          example: Berhasil menambahkan user
+        data:
+          $ref: '#/components/schemas/inline_response_201_data'
+    inline_response_200:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          $ref: '#/components/schemas/inline_response_200_data'
+    AllUserResponse_data_users:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        fullname:
+          type: string
+          example: Kurniawan
+        birth:
+          type: string
+          format: date
+        gender:
+          type: string
+    AllUserResponse_data:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllUserResponse_data_users'
+    AddStayResponse_data:
+      type: object
+      properties:
+        userId:
+          type: string
+    AllStayResponse_data:
+      type: object
+      properties:
+        stays:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stay'
+    Stay_owner:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 2
+        fullname:
+          type: string
+          example: Kurniawan
+        email:
+          type: string
+          example: kurnhyalcantara@gmail.com
+    ReservationResponse_data:
+      type: object
+      properties:
+        reservationId:
+          type: string
+    GetReservationsResponse_data:
+      type: object
+      properties:
+        reservations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Reservation'
+    inline_response_201_data:
+      type: object
+      properties:
+        userId:
+          type: number
+          example: 1
+    inline_response_200_data:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+  securitySchemes:
+    bearerAuth:
+      type: apiKey
+      description: "Enter your Bearer token in the format \"Bearer {token}\""
+      name: Authorization
+      in: header
