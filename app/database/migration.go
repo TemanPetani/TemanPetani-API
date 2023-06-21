@@ -1,4 +1,4 @@
-package migration
+package database
 
 import (
 	_userModel "alta/temanpetani/features/users/data"
@@ -7,7 +7,7 @@ import (
 )
 
 func InitMigration(db *gorm.DB) error {
-	err := db.AutoMigrate(&_userModel.Users{})
+	err := db.AutoMigrate(&_userModel.User{})
 	if err != nil {
 		return err
 	}
