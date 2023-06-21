@@ -2,19 +2,27 @@ package service
 
 import (
 	"alta/temanpetani/features/users"
+	"errors"
+
+	"github.com/go-playground/validator/v10"
 )
 
-type UserService struct {
+type userService struct {
 	userData users.UserDataInterface
+	validate *validator.Validate
 }
 
-// RegisterUser implements users.UserServiceInterface
-func (*UserService) RegisterUser(data users.CoreUserRequest) (userId uint, err error) {
-	panic("unimplemented")
-}
-
-func New(userData users.UserDataInterface) users.UserServiceInterface {
-	return &UserService{
-		userData: userData,
+func New(repo users.UserDataInterface) users.UserServiceInterface {
+	return &userService{
+		userData: repo,
+		validate: validator.New(),
 	}
+}
+
+func (service *userService) Login(email string, password string) (users.UserCore, string, error) {
+	if email == "" || password == "" {
+		return users.UserCore{}, "", errors.New("error validation: email or password cannot be empty")
+	}
+	dataLogin, token, err := service.userData.Login(email, password)
+	return dataLogin, token, err
 }

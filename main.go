@@ -3,7 +3,6 @@ package main
 import (
 	"alta/temanpetani/app/config"
 	"alta/temanpetani/app/database"
-	"alta/temanpetani/app/migration"
 	"alta/temanpetani/app/routers"
 	"log"
 
@@ -13,8 +12,8 @@ import (
 
 func main() {
 	config := config.ReadEnv()
-	database := database.InitDB(config)
-	if errMigrate := migration.InitMigration(database); errMigrate != nil {
+	db := database.InitDB(config)
+	if errMigrate := database.InitMigration(db); errMigrate != nil {
 		log.Fatal(errMigrate.Error())
 	}
 
@@ -25,7 +24,7 @@ func main() {
 	echo.Pre(middleware.RemoveTrailingSlash())
 	echo.Use(middleware.CORS())
 
-	routers.InitRouters(database, echo)
-	
+	routers.InitRouters(db, echo)
+
 	echo.Logger.Fatal(echo.Start(":8080"))
-}	
+}

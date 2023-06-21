@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"alta/temanpetani/app/config"
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -9,31 +10,30 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var appConfig = config.ReadEnv()
-
 func JWTMiddleware() echo.MiddlewareFunc {
 	return echojwt.WithConfig(echojwt.Config{
-		SigningKey: []byte(appConfig.JWT_ACCESS_TOKEN),
+		SigningKey:    []byte(config.JWT_SECRET),
 		SigningMethod: "HS256",
 	})
 }
 
-func CreateAccessToken(userId uint) (string, error) {
+func CreateToken(userId uint64, userRole string) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["userId"] = userId
+	claims["userRole"] = userRole
 	claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(appConfig.JWT_ACCESS_TOKEN))
+	return token.SignedString([]byte(config.JWT_SECRET))
 }
 
-func ExtractTokenUserId(e echo.Context) uint {
+func ExtractToken(e echo.Context) (uint64, string, error) {
 	user := e.Get("user").(*jwt.Token)
 	if user.Valid {
 		claims := user.Claims.(jwt.MapClaims)
 		userId := claims["userId"].(float64)
-		return uint(userId)
+		userRole := claims["userRole"].(string)
+		return uint64(userId), userRole, nil
 	}
-	return 0
+	return 0, "", errors.New("failed to extract jwt-token")
 }
-

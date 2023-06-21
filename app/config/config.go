@@ -8,20 +8,28 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	JWT_SECRET = ""
+)
+
 type AppConfig struct {
-	DB_USERNAME string
-	DB_PASS			string
-	DB_HOSTNAME	string
-	DB_PORT			int
-	DB_NAME 		string
-	JWT_ACCESS_TOKEN	string
+	DB_USERNAME    string
+	DB_PASS        string
+	DB_HOSTNAME    string
+	DB_PORT        int
+	DB_NAME        string
+	JWT_SECRET_KEY string
+}
+
+func InitConfig() *AppConfig {
+	return ReadEnv()
 }
 
 func ReadEnv() *AppConfig {
 	config := AppConfig{}
 	isRead := false
 
-	if val, found :=  os.LookupEnv("DB_USERNAME"); found {
+	if val, found := os.LookupEnv("DB_USERNAME"); found {
 		config.DB_USERNAME = val
 		isRead = true
 	}
@@ -41,14 +49,15 @@ func ReadEnv() *AppConfig {
 		config.DB_NAME = val
 		isRead = true
 	}
-	if val, found := os.LookupEnv("JWT_ACCESS_TOKEN"); found {
-		config.JWT_ACCESS_TOKEN = val
+	if val, found := os.LookupEnv("JWT_SECRET_KEY"); found {
+		config.JWT_SECRET_KEY = val
+		JWT_SECRET = config.JWT_SECRET_KEY
 		isRead = true
 	}
 
 	if !isRead {
 		viper.AddConfigPath(".")
-		viper.SetConfigName(".local")
+		viper.SetConfigName("local")
 		viper.SetConfigType("env")
 
 		if err := viper.ReadInConfig(); err != nil {
@@ -60,9 +69,8 @@ func ReadEnv() *AppConfig {
 		config.DB_HOSTNAME = viper.GetString("DB_HOSTNAME")
 		config.DB_PORT, _ = strconv.Atoi(viper.GetString("DB_PORT"))
 		config.DB_NAME = viper.GetString("DB_NAME")
-		config.JWT_ACCESS_TOKEN = viper.GetString("JWT_ACCESS_TOKEN")
+		config.JWT_SECRET_KEY = viper.GetString("JWT_SECRET_KEY")
 	}
 
 	return &config
 }
-
