@@ -11,15 +11,15 @@ type AuthResponse struct {
 
 type UserResponse struct {
 	ID            uint64 `json:"id,omitempty"`
-	FullName      string `json:"full_name" form:"full_name"`
-	Email         string `json:"email" form:"email"`
-	Phone         string `json:"phone" form:"phone"`
-	Password      string `json:"password" form:"password"`
-	Role          string `json:"role" form:"role"`
-	Address       string `json:"address" form:"address"`
-	Avatar        string `json:"avatar" form:"avatar"`
-	Bank          string `json:"bank" form:"bank"`
-	AccountNumber string `json:"account_number" form:"account_number"`
+	FullName      string `json:"full_name,omitempty"`
+	Email         string `json:"email,omitempty"`
+	Phone         string `json:"phone,omitempty"`
+	Password      string `json:"password,omitempty"`
+	Role          string `json:"role,omitempty"`
+	Address       string `json:"address,omitempty"`
+	Avatar        string `json:"avatar,omitempty"`
+	Bank          string `json:"bank,omitempty"`
+	AccountNumber string `json:"account_number,omitempty"`
 }
 
 func NewAuthResponse(user users.UserCore, jwtToken string) AuthResponse {

@@ -7,24 +7,16 @@ import (
 	"log"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
+	e := echo.New()
 	config := config.ReadEnv()
 	db := database.InitDB(config)
 	if errMigrate := database.InitMigration(db); errMigrate != nil {
 		log.Fatal(errMigrate.Error())
 	}
+	routers.InitRouters(db, e)
 
-	echo := echo.New()
-	echo.Pre(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: `[${time_rfc3339}] ${status} ${method} ${host}${path} ${latency_human}` + "\n",
-	}))
-	echo.Pre(middleware.RemoveTrailingSlash())
-	echo.Use(middleware.CORS())
-
-	routers.InitRouters(db, echo)
-
-	echo.Logger.Fatal(echo.Start(":8080"))
+	e.Logger.Fatal(e.Start(":8080"))
 }

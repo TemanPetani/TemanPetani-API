@@ -3,6 +3,7 @@ package handler
 import (
 	"alta/temanpetani/features/users"
 	"alta/temanpetani/utils/helpers"
+	"alta/temanpetani/utils/middlewares"
 	"net/http"
 	"strings"
 
@@ -59,4 +60,19 @@ func (handler *UserHandler) CreateUser(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("success insert data"))
+}
+
+func (handler *UserHandler) GetUserById(c echo.Context) error {
+	userId, _, errExtract := middlewares.ExtractToken(c)
+	if errExtract != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
+	}
+
+	result, err := handler.userService.GetById(userId)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, helpers.FailedResponse("error read data, "+err.Error()))
+	}
+
+	userResponse := NewUserResponse(result)
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", userResponse))
 }

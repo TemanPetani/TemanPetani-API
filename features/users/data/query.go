@@ -64,3 +64,14 @@ func (repo *userQuery) Insert(input users.UserCore) error {
 
 	return nil
 }
+
+func (repo *userQuery) SelectById(id uint64) (users.UserCore, error) {
+	var userGorm User
+	tx := repo.db.First(&userGorm, id)
+	if tx.Error != nil {
+		return users.UserCore{}, errors.New("error user not found")
+	}
+
+	userCore := NewUserCore(userGorm)
+	return userCore, nil
+}

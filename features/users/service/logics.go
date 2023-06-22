@@ -40,3 +40,11 @@ func (service *userService) Create(input users.UserCore) error {
 
 	return nil
 }
+
+func (service *userService) GetById(id uint64) (users.UserCore, error) {
+	data, err := service.userData.SelectById(id)
+	if err != nil {
+		return users.UserCore{}, err
+	}
+	return data, err
+}
