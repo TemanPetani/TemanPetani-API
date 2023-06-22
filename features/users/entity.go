@@ -17,10 +17,12 @@ type UserDataInterface interface {
 	Login(email string, password string) (UserCore, string, error)
 	Insert(input UserCore) error
 	SelectById(id uint64) (UserCore, error)
+	UpdateById(id uint64, input UserCore) error
 }
 
 type UserServiceInterface interface {
 	Login(email string, password string) (UserCore, string, error)
 	Create(input UserCore) error
 	GetById(id uint64) (UserCore, error)
+	UpdateById(id uint64, input UserCore) error
 }

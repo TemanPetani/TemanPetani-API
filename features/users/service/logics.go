@@ -48,3 +48,12 @@ func (service *userService) GetById(id uint64) (users.UserCore, error) {
 	}
 	return data, err
 }
+
+func (service *userService) UpdateById(id uint64, input users.UserCore) error {
+	errUpdate := service.userData.UpdateById(id, input)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return nil
+}

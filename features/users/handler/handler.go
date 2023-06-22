@@ -76,3 +76,24 @@ func (handler *UserHandler) GetUserById(c echo.Context) error {
 	userResponse := NewUserResponse(result)
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", userResponse))
 }
+
+func (handler *UserHandler) UpdateUserById(c echo.Context) error {
+	userId, _, errExtract := middlewares.ExtractToken(c)
+	if errExtract != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
+	}
+
+	userInput := UserRequest{}
+	errBind := c.Bind(&userInput)
+	if errBind != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error bind data"))
+	}
+
+	userCore := UserRequestToCore(userInput)
+	err := handler.userService.UpdateById(userId, userCore)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, helpers.FailedResponse("error update data, "+err.Error()))
+	}
+
+	return c.JSON(http.StatusOK, helpers.SuccessResponse("success update data"))
+}
