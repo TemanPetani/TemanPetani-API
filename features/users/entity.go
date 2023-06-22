@@ -15,8 +15,10 @@ type UserCore struct {
 
 type UserDataInterface interface {
 	Login(email string, password string) (UserCore, string, error)
+	Insert(input UserCore) error
 }
 
 type UserServiceInterface interface {
 	Login(email string, password string) (UserCore, string, error)
+	Create(input UserCore) error
 }

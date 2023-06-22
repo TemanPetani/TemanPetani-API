@@ -33,9 +33,13 @@ func NewAuthResponse(user users.UserCore, jwtToken string) AuthResponse {
 
 func NewUserResponse(user users.UserCore) UserResponse {
 	return UserResponse{
-		ID:       user.ID,
-		FullName: user.FullName,
-		Email:    user.Email,
-		Role:     user.Role,
+		ID:            user.ID,
+		FullName:      user.FullName,
+		Email:         user.Email,
+		Role:          user.Role,
+		Address:       user.Address,
+		Avatar:        user.Avatar,
+		Bank:          user.Bank,
+		AccountNumber: user.AccountNumber,
 	}
 }

@@ -43,3 +43,24 @@ func (repo *userQuery) Login(email string, password string) (users.UserCore, str
 	dataCore := NewUserCore(userGorm)
 	return dataCore, token, nil
 }
+
+func (repo *userQuery) Insert(input users.UserCore) error {
+	hashedPassword, errHash := helpers.HashPassword(input.Password)
+	if errHash != nil {
+		return errors.New("error hash password")
+	}
+
+	userInputGorm := NewUserModel(input)
+	userInputGorm.Password = hashedPassword
+
+	tx := repo.db.Create(&userInputGorm)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New("insert failed, row affected = 0")
+	}
+
+	return nil
+}

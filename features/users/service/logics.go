@@ -26,3 +26,17 @@ func (service *userService) Login(email string, password string) (users.UserCore
 	dataLogin, token, err := service.userData.Login(email, password)
 	return dataLogin, token, err
 }
+
+func (service *userService) Create(input users.UserCore) error {
+	errValidate := service.validate.Struct(input)
+	if errValidate != nil {
+		return errValidate
+	}
+
+	errInsert := service.userData.Insert(input)
+	if errInsert != nil {
+		return errInsert
+	}
+
+	return nil
+}
