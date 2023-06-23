@@ -43,3 +43,74 @@ func (repo *userQuery) Login(email string, password string) (users.UserCore, str
 	dataCore := NewUserCore(userGorm)
 	return dataCore, token, nil
 }
+
+func (repo *userQuery) Insert(input users.UserCore) error {
+	hashedPassword, errHash := helpers.HashPassword(input.Password)
+	if errHash != nil {
+		return errors.New("error hash password")
+	}
+
+	userInputGorm := NewUserModel(input)
+	userInputGorm.Password = hashedPassword
+
+	tx := repo.db.Create(&userInputGorm)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New("insert failed, row affected = 0")
+	}
+
+	return nil
+}
+
+func (repo *userQuery) SelectById(id uint64) (users.UserCore, error) {
+	var userGorm User
+	tx := repo.db.First(&userGorm, id)
+	if tx.Error != nil {
+		return users.UserCore{}, errors.New("error user not found")
+	}
+
+	userCore := NewUserCore(userGorm)
+	return userCore, nil
+}
+
+func (repo *userQuery) UpdateById(id uint64, input users.UserCore) error {
+	var userGorm User
+	tx := repo.db.First(&userGorm, id)
+	if tx.Error != nil {
+		return errors.New("error user not found")
+	}
+
+	userInputGorm := NewUserModel(input)
+	if userInputGorm.Password != "" {
+		hashedPassword, errHash := helpers.HashPassword(userInputGorm.Password)
+		if errHash != nil {
+			return errors.New("error hash password")
+		}
+		userInputGorm.Password = hashedPassword
+	}
+
+	tx = repo.db.Model(&userGorm).Updates(userInputGorm)
+	if tx.Error != nil {
+		return errors.New(tx.Error.Error() + "failed to update user")
+	}
+
+	return nil
+}
+
+func (repo *userQuery) DeleteById(id uint64) error {
+	var userGorm User
+	tx := repo.db.First(&userGorm, id)
+	if tx.Error != nil {
+		return errors.New("error user not found")
+	}
+
+	tx = repo.db.Delete(&userGorm, id)
+	if tx.Error != nil {
+		return errors.New(tx.Error.Error() + "failed to delete user")
+	}
+
+	return nil
+}

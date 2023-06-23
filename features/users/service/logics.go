@@ -26,3 +26,43 @@ func (service *userService) Login(email string, password string) (users.UserCore
 	dataLogin, token, err := service.userData.Login(email, password)
 	return dataLogin, token, err
 }
+
+func (service *userService) Create(input users.UserCore) error {
+	errValidate := service.validate.Struct(input)
+	if errValidate != nil {
+		return errValidate
+	}
+
+	errInsert := service.userData.Insert(input)
+	if errInsert != nil {
+		return errInsert
+	}
+
+	return nil
+}
+
+func (service *userService) GetById(id uint64) (users.UserCore, error) {
+	data, err := service.userData.SelectById(id)
+	if err != nil {
+		return users.UserCore{}, err
+	}
+	return data, err
+}
+
+func (service *userService) UpdateById(id uint64, input users.UserCore) error {
+	errUpdate := service.userData.UpdateById(id, input)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return nil
+}
+
+func (service *userService) DeleteById(id uint64) error {
+	errUpdate := service.userData.DeleteById(id)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return nil
+}
