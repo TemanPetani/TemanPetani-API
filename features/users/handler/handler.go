@@ -97,3 +97,16 @@ func (handler *UserHandler) UpdateUserById(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("success update data"))
 }
+
+func (handler *UserHandler) DeleteUserById(c echo.Context) error {
+	userId, _, errExtract := middlewares.ExtractToken(c)
+	if errExtract != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
+	}
+
+	err := handler.userService.DeleteById(userId)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, helpers.FailedResponse("error delete data, "+err.Error()))
+	}
+	return c.JSON(http.StatusOK, helpers.SuccessResponse("success delete data"))
+}

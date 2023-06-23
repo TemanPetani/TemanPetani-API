@@ -99,3 +99,18 @@ func (repo *userQuery) UpdateById(id uint64, input users.UserCore) error {
 
 	return nil
 }
+
+func (repo *userQuery) DeleteById(id uint64) error {
+	var userGorm User
+	tx := repo.db.First(&userGorm, id)
+	if tx.Error != nil {
+		return errors.New("error user not found")
+	}
+
+	tx = repo.db.Delete(&userGorm, id)
+	if tx.Error != nil {
+		return errors.New(tx.Error.Error() + "failed to delete user")
+	}
+
+	return nil
+}

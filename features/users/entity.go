@@ -18,6 +18,7 @@ type UserDataInterface interface {
 	Insert(input UserCore) error
 	SelectById(id uint64) (UserCore, error)
 	UpdateById(id uint64, input UserCore) error
+	DeleteById(id uint64) error
 }
 
 type UserServiceInterface interface {
@@ -25,4 +26,5 @@ type UserServiceInterface interface {
 	Create(input UserCore) error
 	GetById(id uint64) (UserCore, error)
 	UpdateById(id uint64, input UserCore) error
+	DeleteById(id uint64) error
 }
