@@ -7,7 +7,6 @@ import (
 )
 
 func InitMigration(db *gorm.DB) error {
-	db.Exec("DROP TABLE users")
 	err := db.AutoMigrate(&_userModel.User{})
 	if err != nil {
 		return err
