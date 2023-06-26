@@ -34,8 +34,11 @@ func (*ProductData) DeleteImage(productId string) error {
 }
 
 // InsertImage implements products.ProductDataInterface
-func (*ProductData) InsertImage(productId string, image products.CoreProductImage) (ImageUrl string, err error) {
-	panic("unimplemented")
+func (repo *ProductData) UpdateImage(productId string, image products.CoreProductImageRequest) error {
+	if tx := repo.db.Model(&Products{}).Where("id = ?", productId).Update("image_url", image.ImageUrl); tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }
 
 // Select implements products.ProductDataInterface
