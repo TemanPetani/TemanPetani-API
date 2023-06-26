@@ -36,6 +36,7 @@ func NewUserResponse(user users.UserCore) UserResponse {
 		ID:            user.ID,
 		FullName:      user.FullName,
 		Email:         user.Email,
+		Phone:         user.Phone,
 		Role:          user.Role,
 		Address:       user.Address,
 		Avatar:        user.Avatar,
