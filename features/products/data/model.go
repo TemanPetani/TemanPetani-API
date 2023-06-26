@@ -35,5 +35,6 @@ func NewProductModel(data products.Core) Products {
 		Stock: data.Stock,
 		Description: data.Description,
 		ImageUrl: data.ImageUrl,
+		UserID: data.UserID,
 	}
 }

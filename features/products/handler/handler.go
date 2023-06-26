@@ -18,12 +18,16 @@ func (handler *UserHandler) PostProductHandler(c echo.Context) error {
 	if errBind := c.Bind(&payload); errBind != nil {
 		return helpers.StatusBadRequestResponse(c, "error bind payload: " + errBind.Error())
 	}
+	file, err := c.FormFile("image");
+	if err != nil {
+		return helpers.StatusBadRequestResponse(c, "error get file image: " + err.Error())
+	}
+	payload.Image = file
 
 	userId, _, errExtractUserId := middlewares.ExtractToken(c)
 	if errExtractUserId != nil {
 		return helpers.StatusAuthorizationErrorResponse(c, "error get user id: " + errExtractUserId.Error())
 	}
-
 	payload.UserID = uint(userId)
 
 	productId, err := handler.userService.AddProduct(payload)

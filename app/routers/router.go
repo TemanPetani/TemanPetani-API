@@ -49,6 +49,8 @@ func initProductRouter(db *gorm.DB, e *echo.Echo) {
 
 	e.POST("/products", productHandler.PostProductHandler, middlewares.JWTMiddleware())
 
+}
+
 func initTemplateRouter(db *gorm.DB, e *echo.Echo) {
 	templateData := _templateData.New(db)
 	templateService := _templateService.New(templateData)

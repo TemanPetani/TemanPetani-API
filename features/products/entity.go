@@ -9,6 +9,7 @@ type Core struct {
 	Stock				uint				`json:"stock" form:"stock" validate:"required,gt=0"`
 	Description	string			`json:"description" form:"description"`
 	ImageUrl		string			`json:"imageUrl" form:"imageUrl"`
+	Image				*multipart.FileHeader			`form:"image"`
 	UserID			uint			
 }
 
