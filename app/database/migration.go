@@ -1,6 +1,7 @@
 package database
 
 import (
+	_productModel "alta/temanpetani/features/products/data"
 	_templateModel "alta/temanpetani/features/templates/data"
 	_userModel "alta/temanpetani/features/users/data"
 
@@ -8,7 +9,7 @@ import (
 )
 
 func InitMigration(db *gorm.DB) error {
-	err := db.AutoMigrate(&_userModel.User{}, &_templateModel.ScheduleTemplate{})
+	err := db.AutoMigrate(&_userModel.User{}, &_templateModel.ScheduleTemplate{}, &_productModel.Products{})
 	if err != nil {
 		return err
 	}
