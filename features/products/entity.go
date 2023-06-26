@@ -13,8 +13,9 @@ type Core struct {
 	UserID			uint			
 }
 
-type CoreProductImage struct {
-	Image 			*multipart.FileHeader				
+type CoreProductImageRequest struct {
+	Image 			*multipart.FileHeader				`form:"image" validate:"required"`
+	ImageUrl 		string			
 }
 
 type ProductDataInterface interface {
@@ -23,10 +24,11 @@ type ProductDataInterface interface {
 	SelectById(productId string) (product Core, err error) 
 	Update(productId string, data Core) error
 	Delete(productId string) error
-	InsertImage(productId string, image CoreProductImage) (ImageUrl string, err error)
+	UpdateImage(productId string, image CoreProductImageRequest) error
 	DeleteImage(productId string) error
 }
 
 type ProductServiceInterface interface {
 	AddProduct(data Core) (productId string, err error)
+	UpdateImage(productId string, image CoreProductImageRequest) (imageUrl string, err error)
 }
