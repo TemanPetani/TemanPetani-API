@@ -16,9 +16,14 @@ type TaskTemplateCore struct {
 type TemplateDataInterface interface {
 	InsertSchedule(input ScheduleTemplateCore) error
 	InsertTask(input TaskTemplateCore) error
+	SelectAllSchedule() ([]ScheduleTemplateCore, error)
+	SelectAllTasks(scheduleId uint64) ([]TaskTemplateCore, error)
+	SelectScheduleById(id uint64) (ScheduleTemplateCore, error)
 }
 
 type TemplateServiceInterface interface {
 	CreateSchedule(input ScheduleTemplateCore) error
 	CreateTask(input TaskTemplateCore) error
+	GetAllSchedule() ([]ScheduleTemplateCore, error)
+	GetScheduleById(id uint64) (ScheduleTemplateCore, error)
 }

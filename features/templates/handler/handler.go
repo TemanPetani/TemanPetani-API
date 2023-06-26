@@ -10,17 +10,17 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-type TemplateHandler struct {
+type templateHandler struct {
 	templateService templates.TemplateServiceInterface
 }
 
-func New(service templates.TemplateServiceInterface) *TemplateHandler {
-	return &TemplateHandler{
+func New(service templates.TemplateServiceInterface) *templateHandler {
+	return &templateHandler{
 		templateService: service,
 	}
 }
 
-func (handler *TemplateHandler) CreateScheduleTemplate(c echo.Context) error {
+func (handler *templateHandler) CreateScheduleTemplate(c echo.Context) error {
 	templateInput := ScheduleTemplateRequest{}
 	errBind := c.Bind(&templateInput)
 	if errBind != nil {
@@ -40,7 +40,7 @@ func (handler *TemplateHandler) CreateScheduleTemplate(c echo.Context) error {
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("success insert data"))
 }
 
-func (handler *TemplateHandler) CreateTaskTemplate(c echo.Context) error {
+func (handler *templateHandler) CreateTaskTemplate(c echo.Context) error {
 	paramId := c.Param("id")
 	ScheduleID, errParse := strconv.ParseUint(paramId, 10, 64)
 	if errParse != nil {
@@ -65,4 +65,31 @@ func (handler *TemplateHandler) CreateTaskTemplate(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("success insert data"))
+}
+
+func (handler *templateHandler) GetAllSchedule(c echo.Context) error {
+	results, err := handler.templateService.GetAllSchedule()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
+	}
+
+	var templatesResponse []ScheduleTemplateResponse
+	for _, value := range results {
+		templatesResponse = append(templatesResponse, NewScheduleTemplateResponse(value))
+	}
+
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", templatesResponse))
+}
+
+func (handler *templateHandler) GetScheduleById(c echo.Context) error {
+	paramId := c.Param("id")
+	scheduleId, _ := strconv.ParseUint(paramId, 10, 64)
+
+	result, err := handler.templateService.GetScheduleById(scheduleId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
+	}
+
+	scheduleResponse := NewScheduleTemplateResponse(result)
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", scheduleResponse))
 }

@@ -45,3 +45,27 @@ func (service *templateService) CreateTask(input templates.TaskTemplateCore) err
 
 	return nil
 }
+
+func (service *templateService) GetAllSchedule() ([]templates.ScheduleTemplateCore, error) {
+	data, err := service.templateData.SelectAllSchedule()
+	if err != nil {
+		return nil, err
+	}
+	return data, err
+}
+
+func (service *templateService) GetScheduleById(id uint64) (templates.ScheduleTemplateCore, error) {
+	data, err := service.templateData.SelectScheduleById(id)
+	if err != nil {
+		return templates.ScheduleTemplateCore{}, err
+	}
+
+	tasks, err := service.templateData.SelectAllTasks(data.ID)
+	if err != nil {
+		return templates.ScheduleTemplateCore{}, err
+	}
+
+	data.Tasks = tasks
+
+	return data, err
+}
