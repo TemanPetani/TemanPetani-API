@@ -31,3 +31,17 @@ func (service *templateService) CreateSchedule(input templates.ScheduleTemplateC
 
 	return nil
 }
+
+func (service *templateService) CreateTask(input templates.TaskTemplateCore) error {
+	errValidate := service.validate.Struct(input)
+	if errValidate != nil {
+		return errValidate
+	}
+
+	errInsert := service.templateData.InsertTask(input)
+	if errInsert != nil {
+		return errInsert
+	}
+
+	return nil
+}

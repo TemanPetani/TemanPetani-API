@@ -8,7 +8,7 @@ import (
 )
 
 func InitMigration(db *gorm.DB) error {
-	err := db.AutoMigrate(&_userModel.User{}, &_templateModel.ScheduleTemplate{})
+	err := db.AutoMigrate(&_userModel.User{}, &_templateModel.ScheduleTemplate{}, &_templateModel.TaskTemplate{})
 	if err != nil {
 		return err
 	}

@@ -15,8 +15,10 @@ type TaskTemplateCore struct {
 
 type TemplateDataInterface interface {
 	InsertSchedule(input ScheduleTemplateCore) error
+	InsertTask(input TaskTemplateCore) error
 }
 
 type TemplateServiceInterface interface {
 	CreateSchedule(input ScheduleTemplateCore) error
+	CreateTask(input TaskTemplateCore) error
 }

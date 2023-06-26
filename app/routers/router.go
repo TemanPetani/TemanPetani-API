@@ -43,4 +43,5 @@ func initTemplateRouter(db *gorm.DB, e *echo.Echo) {
 	templateHandler := _templateHandler.New(templateService)
 
 	e.POST("/templates", templateHandler.CreateScheduleTemplate, middlewares.JWTMiddleware())
+	e.POST("/templates/:id/tasks", templateHandler.CreateTaskTemplate, middlewares.JWTMiddleware())
 }
