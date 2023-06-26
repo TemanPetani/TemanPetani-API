@@ -17,7 +17,7 @@ type User struct {
 	Address       string `gorm:"type:text"`
 	Avatar        string
 	Bank          string
-	AccountNumber string `gorm:"unique"`
+	AccountNumber string 
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	DeletedAt     gorm.DeletedAt `gorm:"index"`

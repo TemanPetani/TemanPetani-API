@@ -8,7 +8,7 @@ type AuthRequest struct {
 }
 
 type UserRequest struct {
-	FullName      string `json:"full_name" form:"full_name"`
+	FullName      string `json:"fullname" form:"fullname"`
 	Email         string `json:"email" form:"email"`
 	Phone         string `json:"phone" form:"phone"`
 	Password      string `json:"password" form:"password"`
@@ -16,7 +16,7 @@ type UserRequest struct {
 	Address       string `json:"address" form:"address"`
 	Avatar        string `json:"avatar" form:"avatar"`
 	Bank          string `json:"bank" form:"bank"`
-	AccountNumber string `json:"account_number" form:"account_number"`
+	AccountNumber string `json:"accountNumber" form:"accountNumber"`
 }
 
 func UserRequestToCore(userRequest UserRequest) users.UserCore {
