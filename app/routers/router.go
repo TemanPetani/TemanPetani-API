@@ -11,6 +11,10 @@ import (
 	_userData "alta/temanpetani/features/users/data"
 	_userHandler "alta/temanpetani/features/users/handler"
 	_userService "alta/temanpetani/features/users/service"
+
+	_productData "alta/temanpetani/features/products/data"
+	_productHandler "alta/temanpetani/features/products/handler"
+	_productService "alta/temanpetani/features/products/service"
 	"alta/temanpetani/utils/middlewares"
 )
 
@@ -22,6 +26,7 @@ func InitRouters(db *gorm.DB, e *echo.Echo) {
 	}))
 
 	initUserRouter(db, e)
+	initProductRouter(db, e)
 	initTemplateRouter(db, e)
 }
 
@@ -35,6 +40,16 @@ func initUserRouter(db *gorm.DB, e *echo.Echo) {
 	e.GET("/users/profile", userHandler.GetUserById, middlewares.JWTMiddleware())
 	e.PUT("/users/profile", userHandler.UpdateUserById, middlewares.JWTMiddleware())
 	e.DELETE("/users/profile", userHandler.DeleteUserById, middlewares.JWTMiddleware())
+}
+
+func initProductRouter(db *gorm.DB, e *echo.Echo) {
+	productData := _productData.New(db)
+	productService := _productService.New(productData)
+	productHandler := _productHandler.New(productService)
+
+	e.POST("/products", productHandler.PostProductHandler, middlewares.JWTMiddleware())
+	e.PUT("/products/:id/images", productHandler.PutImageProductHandler, middlewares.JWTMiddleware())
+
 }
 
 func initTemplateRouter(db *gorm.DB, e *echo.Echo) {
