@@ -5,13 +5,13 @@ info:
   description: API endpoint for Teman Petani
   version: 1.0.0
 servers:
-- url: https://virtserver.swaggerhub.com/kurnhyalcantara/alta-airbnb-api/1.0.0
-  description: SwaggerHub API Auto Mocking
+  - url: https://virtserver.swaggerhub.com/kurnhyalcantara/teman-petani/1.0.0
+    description: SwaggerHub API Auto Mocking
 paths:
   /login:
     post:
       tags:
-      - Authentication
+        - Authentication
       summary: User login
       description: Authenticate a user with email and password.
       requestBody:
@@ -21,18 +21,18 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
         required: true
       responses:
-        "200":
+        '200':
           description: Successful login response
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
-        "400":
+        '400':
           description: Invalid request
   /users:
     post:
       tags:
-      - Users
+        - Users
       summary: Buat akun baru
       requestBody:
         content:
@@ -41,65 +41,601 @@ paths:
               $ref: '#/components/schemas/UserRequest'
         required: true
       responses:
-        "201":
+        '201':
           description: User berhasil ditambahkan
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_201'
-        "400":
+        '400':
           description: Invalid request
   /users/profile:
     get:
       tags:
-      - Users
+        - Users
       summary: Mendapatkan data user profile
       description: Mendapatkan data user profile berdasarkan token
       responses:
-        "200":
+        '200':
           description: Successful operation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
-        "404":
+        '404':
           description: User not found
       security:
-      - bearerAuth: []
+        - bearerAuth: []
     put:
       tags:
-      - Users
+        - Users
       summary: Edit data profile user
       description: Edit data profile user
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRequest'
+              $ref: '#/components/schemas/UserRequestEdit'
         required: true
       responses:
-        "200":
+        '200':
           description: Berhasil memperbarui data user
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponse'
-        "404":
+        '404':
           description: User not found
       security:
-      - bearerAuth: []
+        - bearerAuth: []
     delete:
       tags:
-      - Users
+        - Users
       summary: Delete User
       description: Delete an existing user
       responses:
-        "204":
+        '204':
           description: User deleted successfully
-        "404":
+        '404':
           description: User not found
       security:
-      - bearerAuth: []
+        - bearerAuth: []
+  /users/profile/images:
+    post:
+      tags:
+        - Users
+      summary: Upload user images (avatar)
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The image to be uploaded
+      responses:
+        '201':
+          description: User image berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  urlImage:
+                    type: string
+                    example: https://gcp.com...
+        '400':
+          description: Invalid request
+  /users/sold:
+    get:
+      tags:
+        - Users
+      summary: Mendapatkan daftar produk terjual atau dalam proses transaksi pembeli
+      responses:
+        '200':
+          description: Daftar produk terjual berhasil ditemukan
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          productName:
+                            type: string
+                            description: Nama produk
+                          quantity:
+                            type: integer
+                            description: Jumlah produk
+                          price:
+                            type: number
+                            format: double
+                            description: Harga per jumlah produk
+                          image:
+                            type: string
+                            format: binary
+                            description: Gambar produk
+                          status:
+                            type: string
+                            example: sudah dibayar
+                          createdAt:
+                            type: string
+                            format: date-time
+  /users/orders:
+    get:
+      tags:
+        - Users
+      summary: Mendapatkan daftar transaksi sebagai pembeli
+      responses:
+        '200':
+          description: Daftar status transaksi sebagai pembeli
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    products:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          productName:
+                            type: string
+                            description: Nama produk
+                          quantity:
+                            type: integer
+                            description: Jumlah produk
+                          price:
+                            type: number
+                            format: double
+                            description: Harga per jumlah produk
+                          image:
+                            type: string
+                            format: binary
+                            description: Gambar produk
+                          status:
+                            type: string
+                            example: pending
+                          bank:
+                            type: string
+                            example: bri
+                          vaNumber:
+                            type: string
+                            example: 506521971
+  /plants:
+    post:
+      tags:
+        - Plants
+      summary: Menambahkan aktivitas menanam
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                plantName:
+                  type: string
+                  example: Nama tanaman
+                plantType:
+                  type: string
+                  example: Jenis tanaman
+                dateStart:
+                  type: string
+                  format: date
+                  description: Tanggal mulai
+      responses:
+        '200':
+          description: Berhasil menambahkan aktivitas menanam
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Berhasil menambahkan aktivitas menanam
+                  data:
+                    type: object
+                    properties:
+                      plantId:
+                        type: string
+    get:
+      tags:
+        - Plants
+      summary: Mendapatkan list aktivitas menanam
+      responses:
+        '200':
+          description: Berhasil menampilkan list aktivitas menanam
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plants:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        plantName:
+                          type: string
+                          example: Nama tanaman
+                        recentTask:
+                          type: string
+                          example: Jenis tanaman
+                        dateStart:
+                          type: string
+                          format: date
+                          description: Tanggal mulai
+  /plants/{id}:
+    get:
+      tags:
+        - Plants
+      summary: Mendapatkan detail rekomendasi serta pengingat aktivitas menanam
+      parameters:
+        - name: id
+          in: path
+          description: Plants ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Berhasil menampilkan detail rekomendasi dan pengingat aktivitas menanam
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plantActivity:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        task:
+                          type: string
+                          example: Nama tanaman
+                        prospectDate:
+                          type: string
+                          format: date
+                          description: Prospek Tanggal
+  /products:
+    post:
+      tags:
+        - Products
+      summary: Menambahkan produk yang ingin dijual
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Nama Produk
+                price:
+                  type: number
+                  format: double
+                  example: 250000
+                stock:
+                  type: number
+                  example: 25
+                description:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+                  description: file image to upload
+        required: true
+      responses:
+        '201':
+          description: Berhasil menambahkan produk
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  productId:
+                    type: string
+    get:
+      tags:
+        - Products
+      summary: Mendapatkan list semua product
+      description: Berhasil mendapatkan list semua products
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProductResponse'
+        '404':
+          description: Product not found
+      security:
+        - bearerAuth: []
+  /products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Mendapatkan detail product
+      description: Berhasil mendapatkan detail products
+      parameters:
+        - name: id
+          in: path
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  productName:
+                    type: string
+                    description: Nama produk
+                  quantity:
+                    type: integer
+                    description: Jumlah produk
+                  price:
+                    type: number
+                    format: double
+                    description: Harga per jumlah produk
+                  description:
+                    type: string
+                  image:
+                    type: string
+                    format: url
+                    description: Gambar produk
+        '404':
+          description: Product not found
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Products
+      summary: Mengupdate detail produk
+      parameters:
+        - name: id
+          in: path
+          description: Products ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Nama Produk
+                price:
+                  type: number
+                  format: double
+                  example: 250000
+                stock:
+                  type: number
+                  example: 25
+                description:
+                  type: string
+        required: true
+      responses:
+        '201':
+          description: Berhasil menambahkan produk
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+    delete:
+      tags:
+        - Products
+      summary: Menghapus product
+      parameters:
+        - name: id
+          in: path
+          description: Products ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Berhasil mebghapus produk
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /products/{id}/images:
+    put:
+      tags:
+        - Products
+      summary: Update product image
+      parameters:
+        - name: id
+          in: path
+          description: Products ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The image to be uploaded
+      responses:
+        '200':
+          description: Product image berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      imageUrl:
+                        type: string
+                        example: 'Berhasil mengupdate image product'
+        '400':
+          description: Invalid request
+    get:
+      tags:
+        - Products
+      summary: Mendapatkan semua image product
+      parameters:
+        - name: id
+          in: path
+          description: Products ID
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Berhasil mendapat semua image product
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  productName:
+                    type: string
+                  urlImages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                          example: https://gcp.com...
+  /products/{id}/orders:
+    post:
+      tags:
+        - Products
+      summary: Membeli produk oleh user petani
+      description: Berhasil membeli produk oleh user petani
+      parameters:
+        - name: id
+          in: path
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bank:
+                  type: string
+                  example: bri
+                quantity:
+                  type: number
+                  example: 2
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Berhasil membeli produk oleh user petani
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      productName:
+                        type: string
+                      price:
+                        type: number
+                        format: double
+                      quantity:
+                        type: number
+                      total:
+                        type: number
+                        format: double
+                      bank:
+                        type: string
+                      vaNumber:
+                        type: string
+        '404':
+          description: Product not found
+      security:
+        - bearerAuth: []
+  /products/{id}/negotiations:
+    post:
+      tags:
+        - Products
+      summary: Menawar produk hasil petani oleh admin
+      description: Berhasil menawar produk hasil petani oleh admin
+      parameters:
+        - name: id
+          in: path
+          description: Product ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                priceOffer:
+                  type: number
+                  format: double
+                  example: 20000
+                quantity:
+                  type: number
+                  example: 2
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Berhasil menawar produk hasil pertanian oleh admin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+      security:
+        - bearerAuth: []
 components:
   schemas:
     UserResponse:
@@ -139,26 +675,6 @@ components:
           example: bri
         noRekening:
           type: string
-    UserGetByIdResponse:
-      type: object
-      properties:
-        id:
-          type: string
-          example: d6b4b0d4-2c89-4597-831e-5d641f9cc821
-        fullname:
-          type: string
-          example: Kurniawan
-        email:
-          type: string
-          format: email
-          example: kurnhy@gmail.com
-        phone:
-          type: string
-        birth:
-          type: string
-          format: date
-        gender:
-          type: string
     UserRequest:
       type: object
       properties:
@@ -177,6 +693,51 @@ components:
           type: string
         address:
           type: string
+    UserRequestEdit:
+      type: object
+      properties:
+        fullname:
+          type: string
+          example: Kurniawan
+        email:
+          type: string
+          format: email
+          example: kurnhy@gmail.com
+        password:
+          type: string
+          format: password
+          example: supersecret
+        phone:
+          type: string
+        address:
+          type: string
+        avatar:
+          type: string
+          example: url
+        bank:
+          type: string
+          example: bri
+        accountNumber:
+          type: string
+    UserProductResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          productName:
+            type: string
+            description: Nama produk
+          quantity:
+            type: integer
+            description: Jumlah produk
+          price:
+            type: number
+            format: double
+            description: Harga per jumlah produk
+          image:
+            type: string
+            format: url
+            description: Gambar produk
     AllUserResponse:
       type: object
       properties:
@@ -457,6 +1018,6 @@ components:
   securitySchemes:
     bearerAuth:
       type: apiKey
-      description: "Enter your Bearer token in the format \"Bearer {token}\""
+      description: 'Enter your Bearer token in the format "Bearer {token}"'
       name: Authorization
       in: header
