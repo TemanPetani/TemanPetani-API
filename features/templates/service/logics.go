@@ -69,3 +69,39 @@ func (service *templateService) GetScheduleById(id uint64) (templates.ScheduleTe
 
 	return data, err
 }
+
+func (service *templateService) UpdateScheduleById(id uint64, input templates.ScheduleTemplateCore) error {
+	errUpdate := service.templateData.UpdateScheduleById(id, input)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return nil
+}
+
+func (service *templateService) DeleteScheduleById(id uint64) error {
+	errUpdate := service.templateData.DeleteScheduleById(id)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return nil
+}
+
+func (service *templateService) UpdateTaskById(id uint64, input templates.TaskTemplateCore) error {
+	errUpdate := service.templateData.UpdateTaskById(id, input)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return nil
+}
+
+func (service *templateService) DeleteTaskById(id uint64) error {
+	errUpdate := service.templateData.DeleteTaskById(id)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return nil
+}

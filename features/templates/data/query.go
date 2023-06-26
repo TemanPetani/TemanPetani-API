@@ -91,3 +91,65 @@ func (repo *templateQuery) SelectScheduleById(id uint64) (templates.ScheduleTemp
 	templateCore := NewScheduleTemplateCore(templateGorm)
 	return templateCore, nil
 }
+
+func (repo *templateQuery) UpdateScheduleById(id uint64, input templates.ScheduleTemplateCore) error {
+	var templateGorm ScheduleTemplate
+	tx := repo.db.First(&templateGorm, id)
+	if tx.Error != nil {
+		return errors.New("error template not found")
+	}
+
+	templateInputGorm := NewScheduleTemplateModel(input)
+	tx = repo.db.Model(&templateGorm).Updates(templateInputGorm)
+	if tx.Error != nil {
+		return errors.New(tx.Error.Error() + "failed to update template")
+	}
+
+	return nil
+}
+
+func (repo *templateQuery) DeleteScheduleById(id uint64) error {
+	var templateGorm ScheduleTemplate
+	tx := repo.db.First(&templateGorm, id)
+	if tx.Error != nil {
+		return errors.New("error template not found")
+	}
+
+	tx = repo.db.Delete(&templateGorm, id)
+	if tx.Error != nil {
+		return errors.New(tx.Error.Error() + "failed to delete template")
+	}
+
+	return nil
+}
+
+func (repo *templateQuery) UpdateTaskById(id uint64, input templates.TaskTemplateCore) error {
+	var templateGorm TaskTemplate
+	tx := repo.db.First(&templateGorm, id)
+	if tx.Error != nil {
+		return errors.New("error template not found")
+	}
+
+	templateInputGorm := NewTaskTemplateModel(input)
+	tx = repo.db.Model(&templateGorm).Updates(templateInputGorm)
+	if tx.Error != nil {
+		return errors.New(tx.Error.Error() + "failed to update template")
+	}
+
+	return nil
+}
+
+func (repo *templateQuery) DeleteTaskById(id uint64) error {
+	var templateGorm TaskTemplate
+	tx := repo.db.First(&templateGorm, id)
+	if tx.Error != nil {
+		return errors.New("error template not found")
+	}
+
+	tx = repo.db.Delete(&templateGorm, id)
+	if tx.Error != nil {
+		return errors.New(tx.Error.Error() + "failed to delete template")
+	}
+
+	return nil
+}

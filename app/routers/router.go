@@ -46,4 +46,8 @@ func initTemplateRouter(db *gorm.DB, e *echo.Echo) {
 	e.POST("/templates/:id/tasks", templateHandler.CreateTaskTemplate, middlewares.JWTMiddleware())
 	e.GET("/templates", templateHandler.GetAllSchedule, middlewares.JWTMiddleware())
 	e.GET("/templates/:id", templateHandler.GetScheduleById, middlewares.JWTMiddleware())
+	e.PUT("/templates/:id", templateHandler.UpdateScheduleById, middlewares.JWTMiddleware())
+	e.PUT("/templates/tasks/:id", templateHandler.UpdateTaskById, middlewares.JWTMiddleware())
+	e.DELETE("/templates/:id", templateHandler.DeleteScheduleById, middlewares.JWTMiddleware())
+	e.DELETE("/templates/tasks/:id", templateHandler.DeleteTaskById, middlewares.JWTMiddleware())
 }
