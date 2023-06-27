@@ -15,6 +15,38 @@ type ProductService struct {
 	validator   *validator.Validate
 }
 
+// DeleteProductById implements products.ProductServiceInterface
+func (service *ProductService) DeleteProductById(productId string, userId uint) error {
+	if verifyOwner := service.productData.VerifyProductOwner(productId, userId); verifyOwner {
+		if err := service.productData.Delete(productId); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// UpdateProductById implements products.ProductServiceInterface
+func (service *ProductService) UpdateProductById(productId string, data products.Core) error {
+	if errValidator := service.validator.Struct(data); errValidator != nil {
+		return errors.New("error validation: " + errValidator.Error())
+	}
+	if verifyOwner := service.productData.VerifyProductOwner(productId, data.UserID); verifyOwner {
+		if err := service.productData.Update(productId, data); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// GetProductById implements products.ProductServiceInterface
+func (service *ProductService) GetProductById(productId string) (*products.Core, error) {
+	product, err := service.productData.SelectById(productId)
+	if err != nil {
+		return nil, err
+	}
+	return product, nil
+}
+
 // GetAllProducts implements products.ProductServiceInterface
 func (service *ProductService) GetAllProducts(querys map[string]any) ([]products.Core, error) {
 	allProducts, err := service.productData.Select(querys)

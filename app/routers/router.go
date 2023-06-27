@@ -49,8 +49,10 @@ func initProductRouter(db *gorm.DB, e *echo.Echo) {
 
 	e.POST("/products", productHandler.PostProductHandler, middlewares.JWTMiddleware())
 	e.GET("/products", productHandler.GetAllProductsHandler)
+	e.GET("/products/:id", productHandler.GetProductByIdHandler)
+	e.PUT("/products/:id", productHandler.PutProductByIdHandler, middlewares.JWTMiddleware())
 	e.PUT("/products/:id/images", productHandler.PutImageProductHandler, middlewares.JWTMiddleware())
-
+	e.DELETE("/products/:id", productHandler.DeleteProductByIdHandler, middlewares.JWTMiddleware())
 }
 
 func initTemplateRouter(db *gorm.DB, e *echo.Echo) {
