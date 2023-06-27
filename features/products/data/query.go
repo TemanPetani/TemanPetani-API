@@ -13,7 +13,7 @@ type ProductData struct {
 
 // Insert implements products.ProductDataInterface
 func (repo *ProductData) Insert(data products.Core) (productId string, err error) {
-	data.ID = helpers.GenerateNewId();
+	data.ID = helpers.GenerateNewId()
 
 	mapData := CoreToProductModel(data)
 	if tx := repo.db.Create(&mapData); tx.Error != nil {
@@ -32,19 +32,59 @@ func (repo *ProductData) Select(querys map[string]any) ([]products.Core, error) 
 	var allProductsMap []products.Core
 	for _, product := range allProducts {
 		productMap := ModelToProductCore(product)
-		if querys["role"] == "admin" && productMap.User.Role == "user" {
-			allProductsMap = append(allProductsMap, productMap)
-		} else if querys["role"] == "user" && productMap.User.Role == "admin" {
-			allProductsMap = append(allProductsMap, productMap)
+		if querys["role"] != nil {
+			if querys["role"] == "admin" && productMap.User.Role == "user" {
+				allProductsMap = append(allProductsMap, productMap)
+			} else if querys["role"] == "user" && productMap.User.Role == "admin" {
+				allProductsMap = append(allProductsMap, productMap)
+			}
+		} else if querys["owner"] != nil {
+			if querys["owner"] == "admin" && productMap.User.Role == "admin" {
+				allProductsMap = append(allProductsMap, productMap)
+			} else if querys["owner"] == "user" && productMap.User.Role == "user" {
+				allProductsMap = append(allProductsMap, productMap)
+			}
 		}
 	}
 	return allProductsMap, nil
 }
 
-// Delete implements products.ProductDataInterface
-func (*ProductData) Delete(productId string) error {
-	panic("unimplemented")
+// SelectById implements products.ProductDataInterface
+func (repo *ProductData) SelectById(productId string) (*products.Core, error) {
+	var product Products
+	if tx := repo.db.Where("id = ?", productId).First(&product); tx.Error != nil {
+		return nil, tx.Error
+	}
+	productMap := ModelToProductCore(product)
+	return &productMap, nil
 }
+
+// Update implements products.ProductDataInterface
+func (repo *ProductData) Update(productId string, data products.Core) error {
+	dataMap := CoreToProductModel(data)
+	if tx := repo.db.Model(&Products{}).Where("id = ?", productId).Updates(dataMap); tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+// Delete implements products.ProductDataInterface
+func (repo *ProductData) Delete(productId string) error {
+	if tx := repo.db.Where("id = ?", productId).Delete(&Products{}); tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+// VerifyProductOwner implements products.ProductDataInterface
+func (repo *ProductData) VerifyProductOwner(productId string, owner uint) bool {
+	var products Products
+	if tx := repo.db.Where("id = ? && user_id = ?", productId, owner).First(&products); tx.RowsAffected != 0 {
+		return true
+	}
+	return false
+}
+
 
 // DeleteImage implements products.ProductDataInterface
 func (*ProductData) DeleteImage(productId string) error {
@@ -57,16 +97,6 @@ func (repo *ProductData) UpdateImage(productId string, image products.CoreProduc
 		return tx.Error
 	}
 	return nil
-}
-
-// SelectById implements products.ProductDataInterface
-func (*ProductData) SelectById(productId string) (product products.Core, err error) {
-	panic("unimplemented")
-}
-
-// Update implements products.ProductDataInterface
-func (*ProductData) Update(productId string, data products.Core) error {
-	panic("unimplemented")
 }
 
 func New(db *gorm.DB) products.ProductDataInterface {

@@ -78,7 +78,10 @@ func (handler *UserHandler) GetAllProductsHandler(c echo.Context) error {
 	if role != "" {
 		querys["role"] = role
 	}
-
+	owner := c.QueryParam("owner")
+	if owner != "" {
+		querys["owner"] = owner
+	}
 	products, err := handler.productService.GetAllProducts(querys)
 	if err != nil {
 		return helpers.StatusInternalServerError(c, err.Error())
@@ -86,6 +89,50 @@ func (handler *UserHandler) GetAllProductsHandler(c echo.Context) error {
 	return helpers.StatusOKWithData(c, "Berhasil mendapatkan sejumlah produk", map[string]any{
 		"products": products,
 	})
+}
+
+func (handler *UserHandler) GetProductByIdHandler(c echo.Context) error {
+	productId := c.Param("id")
+	product, err := handler.productService.GetProductById(productId)
+	if err != nil {
+		return helpers.StatusInternalServerError(c, err.Error())
+	}
+	return helpers.StatusOKWithData(c, "Berhasil mendapatkan detail produk", map[string]any{
+		"product": product,
+	})
+}
+
+func (handler *UserHandler) PutProductByIdHandler(c echo.Context) error {
+	productId := c.Param("id")
+	var payload products.Core
+	if errBind := c.Bind(&payload); errBind != nil {
+		return helpers.StatusBadRequestResponse(c, "error bind payload: " + errBind.Error())
+	}
+	userId, _, errExtractUserId := middlewares.ExtractToken(c)
+	if errExtractUserId != nil {
+		return helpers.StatusAuthorizationErrorResponse(c, "error get user id: " + errExtractUserId.Error())
+	}
+	payload.UserID = uint(userId)
+	if err := handler.productService.UpdateProductById(productId, payload); err != nil {
+		if strings.Contains(err.Error(), "validation") {
+			return helpers.StatusBadRequestResponse(c, err.Error())
+		} else {
+			return helpers.StatusInternalServerError(c, err.Error())
+		}
+	}
+	return helpers.StatusOK(c, "Berhasil memperbarui data produk")
+}
+
+func (handler *UserHandler) DeleteProductByIdHandler(c echo.Context) error {
+	productId := c.Param("id")
+	userId, _, errExtractUserId := middlewares.ExtractToken(c)
+	if errExtractUserId != nil {
+		return helpers.StatusAuthorizationErrorResponse(c, "error get user id: " + errExtractUserId.Error())
+	}
+	if err := handler.productService.DeleteProductById(productId, uint(userId)); err != nil {
+		return helpers.StatusInternalServerError(c, err.Error())
+	}
+	return helpers.StatusOK(c, "Berhasil menghapus data produk")
 }
 
 func New(productService products.ProductServiceInterface) *UserHandler {

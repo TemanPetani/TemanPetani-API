@@ -29,8 +29,9 @@ type CoreProductImageRequest struct {
 type ProductDataInterface interface {
 	Insert(data Core) (productId string, err error)
 	Select(querys map[string]any) ([]Core, error)
-	SelectById(productId string) (product Core, err error) 
+	SelectById(productId string) (*Core, error) 
 	Update(productId string, data Core) error
+	VerifyProductOwner(productId string, owner uint) bool
 	Delete(productId string) error
 	UpdateImage(productId string, image CoreProductImageRequest) error
 	DeleteImage(productId string) error
@@ -40,4 +41,7 @@ type ProductServiceInterface interface {
 	AddProduct(data Core) (productId string, err error)
 	UpdateImage(productId string, image CoreProductImageRequest) (imageUrl string, err error)
 	GetAllProducts(querys map[string]any) ([]Core, error)
+	GetProductById(productId string) (*Core, error)
+	UpdateProductById(productId string, data Core) error
+	DeleteProductById(productId string, userId uint) error
 }
