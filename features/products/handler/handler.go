@@ -82,6 +82,11 @@ func (handler *UserHandler) GetAllProductsHandler(c echo.Context) error {
 	if owner != "" {
 		querys["owner"] = owner
 	}
+	userId, _, errExtractUserId := middlewares.ExtractToken(c)
+	if errExtractUserId != nil {
+		return helpers.StatusAuthorizationErrorResponse(c, "error get user id: " + errExtractUserId.Error())
+	}
+	querys["userId"] = userId
 	products, err := handler.productService.GetAllProducts(querys)
 	if err != nil {
 		return helpers.StatusInternalServerError(c, err.Error())
