@@ -5,9 +5,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 
-	_templateData "alta/temanpetani/features/templates/data"
-	_templateHandler "alta/temanpetani/features/templates/handler"
-	_templateService "alta/temanpetani/features/templates/service"
 	_userData "alta/temanpetani/features/users/data"
 	_userHandler "alta/temanpetani/features/users/handler"
 	_userService "alta/temanpetani/features/users/service"
@@ -15,6 +12,15 @@ import (
 	_productData "alta/temanpetani/features/products/data"
 	_productHandler "alta/temanpetani/features/products/handler"
 	_productService "alta/temanpetani/features/products/service"
+
+	_templateData "alta/temanpetani/features/templates/data"
+	_templateHandler "alta/temanpetani/features/templates/handler"
+	_templateService "alta/temanpetani/features/templates/service"
+
+	_plantData "alta/temanpetani/features/plants/data"
+	_plantHandler "alta/temanpetani/features/plants/handler"
+	_plantService "alta/temanpetani/features/plants/service"
+
 	"alta/temanpetani/utils/middlewares"
 )
 
@@ -28,6 +34,7 @@ func InitRouters(db *gorm.DB, e *echo.Echo) {
 	initUserRouter(db, e)
 	initProductRouter(db, e)
 	initTemplateRouter(db, e)
+	initPlantsRouter(db, e)
 }
 
 func initUserRouter(db *gorm.DB, e *echo.Echo) {
@@ -66,4 +73,13 @@ func initTemplateRouter(db *gorm.DB, e *echo.Echo) {
 	e.PUT("/templates/tasks/:id", templateHandler.UpdateTaskById, middlewares.JWTMiddleware())
 	e.DELETE("/templates/:id", templateHandler.DeleteScheduleById, middlewares.JWTMiddleware())
 	e.DELETE("/templates/tasks/:id", templateHandler.DeleteTaskById, middlewares.JWTMiddleware())
+}
+
+func initPlantsRouter(db *gorm.DB, e *echo.Echo) {
+	templateData := _templateData.New(db)
+	plantData := _plantData.New(db)
+	plantService := _plantService.New(plantData, templateData)
+	plantHandler := _plantHandler.New(plantService)
+
+	e.POST("/plants", plantHandler.CreateSchedule, middlewares.JWTMiddleware())
 }
