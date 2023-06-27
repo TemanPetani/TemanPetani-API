@@ -3,14 +3,22 @@ package products
 import "mime/multipart"
 
 type Core struct {
-	ID					string
+	ID					string			`json:"id" form:"id"`
 	Name				string			`json:"name" form:"name" validate:"required"`
 	Price 			float64			`json:"price" form:"price" validate:"required"`
 	Stock				uint				`json:"stock" form:"stock" validate:"required,gt=0"`
 	Description	string			`json:"description" form:"description"`
 	ImageUrl		string			`json:"imageUrl" form:"imageUrl"`
-	Image				*multipart.FileHeader			`form:"image"`
-	UserID			uint			
+	Image				*multipart.FileHeader			`json:"image,omitempty" form:"image,omitempty"`
+	UserID			uint				`json:"userId,omitempty"`
+	User				Users				`json:"owner" form:"owner"`		
+}
+
+type Users struct {
+	ID				string			`json:"id" form:"id"`
+	FullName	string 			`json:"fullname" form:"fullname"`
+	Email			string 			`json:"email" form:"email"`
+	Role			string			`json:"role" form:"role"`
 }
 
 type CoreProductImageRequest struct {
@@ -20,7 +28,7 @@ type CoreProductImageRequest struct {
 
 type ProductDataInterface interface {
 	Insert(data Core) (productId string, err error)
-	Select() (products []Core, err error)
+	Select(querys map[string]any) ([]Core, error)
 	SelectById(productId string) (product Core, err error) 
 	Update(productId string, data Core) error
 	Delete(productId string) error
@@ -31,4 +39,5 @@ type ProductDataInterface interface {
 type ProductServiceInterface interface {
 	AddProduct(data Core) (productId string, err error)
 	UpdateImage(productId string, image CoreProductImageRequest) (imageUrl string, err error)
+	GetAllProducts(querys map[string]any) ([]Core, error)
 }

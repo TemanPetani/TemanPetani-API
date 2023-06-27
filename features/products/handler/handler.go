@@ -10,7 +10,7 @@ import (
 )
 
 type UserHandler struct {
-	userService products.ProductServiceInterface
+	productService products.ProductServiceInterface
 }
 
 func (handler *UserHandler) PostProductHandler(c echo.Context) error {
@@ -30,7 +30,7 @@ func (handler *UserHandler) PostProductHandler(c echo.Context) error {
 	}
 	payload.UserID = uint(userId)
 
-	productId, err := handler.userService.AddProduct(payload)
+	productId, err := handler.productService.AddProduct(payload)
 	if err != nil {
 		if strings.Contains(err.Error(), "validator") {
 			return helpers.StatusBadRequestResponse(c, err.Error())
@@ -55,7 +55,7 @@ func (handler *UserHandler) PutImageProductHandler(c echo.Context) error {
 	}
 	payload.Image = file
 
-	imageUrl, errUpdate := handler.userService.UpdateImage(productId, payload)
+	imageUrl, errUpdate := handler.productService.UpdateImage(productId, payload)
 	if errUpdate != nil {
 		if strings.Contains(errUpdate.Error(), "validator") {
 			return helpers.StatusBadRequestResponse(c, errUpdate.Error())
@@ -72,8 +72,24 @@ func (handler *UserHandler) PutImageProductHandler(c echo.Context) error {
 	return nil
 }
 
-func New(userService products.ProductServiceInterface) *UserHandler {
+func (handler *UserHandler) GetAllProductsHandler(c echo.Context) error {
+	querys := map[string]any{}
+	role := c.QueryParam("role")
+	if role != "" {
+		querys["role"] = role
+	}
+
+	products, err := handler.productService.GetAllProducts(querys)
+	if err != nil {
+		return helpers.StatusInternalServerError(c, err.Error())
+	}
+	return helpers.StatusOKWithData(c, "Berhasil mendapatkan sejumlah produk", map[string]any{
+		"products": products,
+	})
+}
+
+func New(productService products.ProductServiceInterface) *UserHandler {
 	return &UserHandler{
-		userService: userService,
+		productService: productService,
 	}
 }
