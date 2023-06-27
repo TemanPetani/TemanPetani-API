@@ -52,3 +52,38 @@ func (repo *plantQuery) InsertTask(input []plants.TaskCore) error {
 
 	return nil
 }
+
+func (repo *plantQuery) SelectAllSchedule() ([]plants.ScheduleCore, error) {
+	query := ("select s.id as schedule_id, u.name as farmer_name, " +
+		"s.name as schedule_name from schedules as s inner join users " +
+		"as u on s.user_id = u.id")
+
+	var plantsData []FarmerSchedule
+	tx := repo.db.Raw(query).Scan(&plantsData)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var plantsCoreAll []plants.ScheduleCore
+	for _, value := range plantsData {
+		plantCore := NewFarmerSchedule(value)
+		plantsCoreAll = append(plantsCoreAll, plantCore)
+	}
+
+	return plantsCoreAll, nil
+}
+
+func (repo *plantQuery) SelectAllFarmerSchedule(farmerId uint64) ([]plants.ScheduleCore, error) {
+	var plantsData []Schedule
+	tx := repo.db.Where("user_id = ?", farmerId).Find(&plantsData)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var plantsCoreAll []plants.ScheduleCore
+	for _, value := range plantsData {
+		plantCore := NewScheduleCore(value)
+		plantsCoreAll = append(plantsCoreAll, plantCore)
+	}
+	return plantsCoreAll, nil
+}

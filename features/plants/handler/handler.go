@@ -3,6 +3,7 @@ package handler
 import (
 	"alta/temanpetani/features/plants"
 	"alta/temanpetani/utils/helpers"
+	"alta/temanpetani/utils/middlewares"
 	"net/http"
 	"strings"
 
@@ -26,7 +27,13 @@ func (handler *plantHandler) CreateSchedule(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error bind data"))
 	}
 
+	userId, _, errExtract := middlewares.ExtractToken(c)
+	if errExtract != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
+	}
+
 	plantCore := NewScheduleCore(plantInput)
+	plantCore.Farmer.FarmerID = userId
 	err := handler.plantService.CreateSchedule(plantCore)
 	if err != nil {
 		if strings.Contains(err.Error(), "validation") {

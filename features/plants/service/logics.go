@@ -58,3 +58,19 @@ func (service *plantService) CreateSchedule(input plants.ScheduleCore) error {
 
 	return nil
 }
+
+func (service *plantService) GetAllSchedule() ([]plants.ScheduleCore, error) {
+	data, err := service.plantData.SelectAllSchedule()
+	if err != nil {
+		return nil, err
+	}
+	return data, err
+}
+
+func (service *plantService) GetAllFarmerSchedule(farmerId uint64) ([]plants.ScheduleCore, error) {
+	data, err := service.plantData.SelectAllFarmerSchedule(farmerId)
+	if err != nil {
+		return nil, err
+	}
+	return data, err
+}

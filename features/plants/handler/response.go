@@ -9,7 +9,7 @@ type ScheduleResponse struct {
 	ID        uint64          `json:"id,omitempty"`
 	Name      string          `json:"name,omitempty"`
 	StartDate time.Time       `json:"startDate,omitempty"`
-	Tasks     []TasksResponse `json:"tasks,omitempty"`
+	Tasks     []TasksResponse `json:"activity,omitempty"`
 }
 
 type TasksResponse struct {
