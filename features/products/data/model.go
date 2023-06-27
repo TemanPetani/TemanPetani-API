@@ -25,9 +25,10 @@ type Users struct {
 	ID				string			`gorm:"type:uint;primaryKey"`
 	FullName	string 			`gorm:"type:varchar(100);notNull"`
 	Email			string 			`gorm:"type:varchar(50);unique:notNull"`
+	Role			string			`gorm:"type:enum('admin','user');default:'user'"`
 }
 
-func NewProductModel(data products.Core) Products {
+func CoreToProductModel(data products.Core) Products {
 	return Products{
 		ID: data.ID,
 		Name: data.Name,
@@ -36,5 +37,17 @@ func NewProductModel(data products.Core) Products {
 		Description: data.Description,
 		ImageUrl: data.ImageUrl,
 		UserID: data.UserID,
+	}
+}
+
+func ModelToProductCore(model Products) products.Core {
+	return products.Core{
+		ID: model.ID,
+		Name: model.Name,
+		Price: model.Price,
+		Stock: model.Stock,
+		Description: model.Description,
+		ImageUrl: model.ImageUrl,
+		User: products.Users(model.User),		
 	}
 }

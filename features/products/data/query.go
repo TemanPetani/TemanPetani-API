@@ -15,12 +15,30 @@ type ProductData struct {
 func (repo *ProductData) Insert(data products.Core) (productId string, err error) {
 	data.ID = helpers.GenerateNewId();
 
-	mapData := NewProductModel(data)
+	mapData := CoreToProductModel(data)
 	if tx := repo.db.Create(&mapData); tx.Error != nil {
 		return "", tx.Error
 	}
 
 	return data.ID, nil
+}
+
+// Select implements products.ProductDataInterface
+func (repo *ProductData) Select(querys map[string]any) ([]products.Core, error) {
+	var allProducts []Products
+	if tx := repo.db.Preload("User").Find(&allProducts); tx.Error != nil {
+		return nil, tx.Error
+	}
+	var allProductsMap []products.Core
+	for _, product := range allProducts {
+		productMap := ModelToProductCore(product)
+		if querys["role"] == "admin" && productMap.User.Role == "user" {
+			allProductsMap = append(allProductsMap, productMap)
+		} else if querys["role"] == "user" && productMap.User.Role == "admin" {
+			allProductsMap = append(allProductsMap, productMap)
+		}
+	}
+	return allProductsMap, nil
 }
 
 // Delete implements products.ProductDataInterface
@@ -39,11 +57,6 @@ func (repo *ProductData) UpdateImage(productId string, image products.CoreProduc
 		return tx.Error
 	}
 	return nil
-}
-
-// Select implements products.ProductDataInterface
-func (*ProductData) Select() (products []products.Core, err error) {
-	panic("unimplemented")
 }
 
 // SelectById implements products.ProductDataInterface
