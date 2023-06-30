@@ -87,4 +87,5 @@ func initPlantsRouter(db *gorm.DB, e *echo.Echo) {
 	e.GET("/users/plants", plantHandler.GetAllFarmerSchedule, middlewares.JWTMiddleware())
 	e.GET("/plants/notifications", plantHandler.GetTasksNotification, middlewares.JWTMiddleware())
 	e.PUT("/plants/activities/:id", plantHandler.UpdateTaskById, middlewares.JWTMiddleware())
+	e.DELETE("/plants/:id", plantHandler.DeleteScheduleById, middlewares.JWTMiddleware())
 }

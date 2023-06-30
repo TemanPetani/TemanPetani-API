@@ -110,8 +110,17 @@ func (service *plantService) GetTasksNotification(userId uint64) ([]plants.TaskC
 	return data, err
 }
 
-func (service *plantService) UpdateTaskById(id uint64, input plants.TaskCore) error {
-	errUpdate := service.plantData.UpdateTaskById(id, input)
+func (service *plantService) UpdateTaskById(taskId uint64, input plants.TaskCore) error {
+	errUpdate := service.plantData.UpdateTaskById(taskId, input)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return nil
+}
+
+func (service *plantService) DeleteScheduleById(scheduleId uint64) error {
+	errUpdate := service.plantData.DeleteScheduleById(scheduleId)
 	if errUpdate != nil {
 		return errUpdate
 	}

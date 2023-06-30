@@ -136,3 +136,17 @@ func (handler *plantHandler) UpdateTaskById(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("success update data"))
 }
+
+func (handler *plantHandler) DeleteScheduleById(c echo.Context) error {
+	paramId := c.Param("id")
+	scheduleId, errParse := strconv.ParseUint(paramId, 10, 64)
+	if errParse != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error parse data"))
+	}
+
+	err := handler.plantService.DeleteScheduleById(scheduleId)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, helpers.FailedResponse("error delete data, "+err.Error()))
+	}
+	return c.JSON(http.StatusOK, helpers.SuccessResponse("success delete data"))
+}

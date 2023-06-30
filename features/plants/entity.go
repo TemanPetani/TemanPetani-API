@@ -36,6 +36,7 @@ type PlantDataInterface interface {
 	SelectScheduleById(scheduleId uint64) (ScheduleCore, error)
 	SelectTasksNotification(userId uint64) ([]TaskCore, error)
 	UpdateTaskById(taskId uint64, input TaskCore) error
+	DeleteScheduleById(scheduleId uint64) error
 }
 
 type PlantServiceInterface interface {
@@ -45,4 +46,5 @@ type PlantServiceInterface interface {
 	GetScheduleById(scheduleId uint64) (ScheduleCore, error)
 	GetTasksNotification(userId uint64) ([]TaskCore, error)
 	UpdateTaskById(taskId uint64, input TaskCore) error
+	DeleteScheduleById(scheduleId uint64) error
 }

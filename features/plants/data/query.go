@@ -168,3 +168,24 @@ func (repo *plantQuery) UpdateTaskById(taskId uint64, input plants.TaskCore) err
 
 	return nil
 }
+
+func (repo *plantQuery) DeleteScheduleById(scheduleId uint64) error {
+	var scheduleGorm Schedule
+	tx := repo.db.First(&scheduleGorm, scheduleId)
+	if tx.Error != nil {
+		return errors.New("error template not found")
+	}
+
+	tx = repo.db.Delete(&scheduleGorm, scheduleId)
+	if tx.Error != nil {
+		return errors.New(tx.Error.Error() + "failed to delete template")
+	}
+
+	var taskGorm Task
+	tx = repo.db.Where("schedule_id = ?", scheduleId).Delete(&taskGorm)
+	if tx.Error != nil {
+		return errors.New(tx.Error.Error() + "failed to delete template")
+	}
+
+	return nil
+}
