@@ -6,13 +6,13 @@ import (
 )
 
 type ScheduleResponse struct {
-	ID        uint64          `json:"id,omitempty"`
-	Name      string          `json:"name,omitempty"`
-	StartDate time.Time       `json:"startDate,omitempty"`
-	Tasks     []TasksResponse `json:"activities,omitempty"`
+	ID        uint64         `json:"id,omitempty"`
+	Name      string         `json:"name,omitempty"`
+	StartDate time.Time      `json:"startDate,omitempty"`
+	Tasks     []TaskResponse `json:"activities,omitempty"`
 }
 
-type TasksResponse struct {
+type TaskResponse struct {
 	ID            uint64     `json:"id,omitempty"`
 	Name          string     `json:"name,omitempty"`
 	StartDate     time.Time  `json:"startDate,omitempty"`
@@ -26,9 +26,9 @@ type FarmerScheduleResponse struct {
 }
 
 func NewScheduleResponse(plant plants.ScheduleCore) ScheduleResponse {
-	var tasksResponse []TasksResponse
+	var tasksResponse []TaskResponse
 	for i, value := range plant.Tasks {
-		tasksResponse = append(tasksResponse, TasksResponse{
+		tasksResponse = append(tasksResponse, TaskResponse{
 			ID:            value.ID,
 			Name:          value.Name,
 			StartDate:     value.StartDate,
@@ -47,12 +47,19 @@ func NewScheduleResponse(plant plants.ScheduleCore) ScheduleResponse {
 	}
 }
 
-func NewTaskplantResponse(plant plants.TaskCore) TasksResponse {
-	return TasksResponse{
+func NewTaskResponse(plant plants.TaskCore) TaskResponse {
+	var completedDate *time.Time
+	if plant.CompletedDate.IsZero() {
+		completedDate = nil
+	} else {
+		completedDate = &plant.CompletedDate
+	}
+
+	return TaskResponse{
 		ID:            plant.ID,
 		Name:          plant.Name,
 		StartDate:     plant.StartDate,
-		CompletedDate: &plant.CompletedDate,
+		CompletedDate: completedDate,
 	}
 }
 

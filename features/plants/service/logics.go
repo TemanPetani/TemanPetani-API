@@ -64,7 +64,8 @@ func (service *plantService) GetAllSchedule() ([]plants.ScheduleCore, error) {
 	if err != nil {
 		return nil, err
 	}
-	return data, err
+
+	return data, nil
 }
 
 func (service *plantService) GetAllFarmerSchedule(farmerId uint64) ([]plants.ScheduleCore, error) {
@@ -80,7 +81,8 @@ func (service *plantService) GetAllFarmerSchedule(farmerId uint64) ([]plants.Sch
 		}
 		data[i].Tasks = append(data[i].Tasks, task)
 	}
-	return data, err
+
+	return data, nil
 }
 
 func (service *plantService) GetScheduleById(id uint64) (plants.ScheduleCore, error) {
@@ -97,4 +99,22 @@ func (service *plantService) GetScheduleById(id uint64) (plants.ScheduleCore, er
 	data.Tasks = tasks
 
 	return data, err
+}
+
+func (service *plantService) GetTasksNotification(userId uint64) ([]plants.TaskCore, error) {
+	data, err := service.plantData.SelectTasksNotification(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, err
+}
+
+func (service *plantService) UpdateTaskById(id uint64, input plants.TaskCore) error {
+	errUpdate := service.plantData.UpdateTaskById(id, input)
+	if errUpdate != nil {
+		return errUpdate
+	}
+
+	return nil
 }

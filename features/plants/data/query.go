@@ -103,21 +103,6 @@ func (repo *plantQuery) SelectAllTasks(scheduleId uint64) ([]plants.TaskCore, er
 	return plantsCoreAll, nil
 }
 
-func (repo *plantQuery) SelectScheduleNotifications(farmerId uint64) ([]plants.ScheduleCore, error) {
-	var plantsData []Schedule
-	tx := repo.db.Where("user_id = ?", farmerId).Find(&plantsData)
-	if tx.Error != nil {
-		return nil, tx.Error
-	}
-
-	var plantsCoreAll []plants.ScheduleCore
-	for _, value := range plantsData {
-		plantCore := NewScheduleCore(value)
-		plantsCoreAll = append(plantsCoreAll, plantCore)
-	}
-	return plantsCoreAll, nil
-}
-
 func (repo *plantQuery) SelectRecentTask(scheduleId uint64) (plants.TaskCore, error) {
 	var plantsData Task
 	tx := repo.db.
@@ -143,4 +128,43 @@ func (repo *plantQuery) SelectScheduleById(id uint64) (plants.ScheduleCore, erro
 
 	plantCore := NewScheduleCore(plantGorm)
 	return plantCore, nil
+}
+
+func (repo *plantQuery) SelectTasksNotification(userId uint64) ([]plants.TaskCore, error) {
+	query := "select t.* from tasks as t " +
+		"inner join schedules as s on t.schedule_id = s.id " +
+		"inner join users as u on s.user_id = u.id " +
+		"where  u.id = ? " +
+		"and s.deleted_at is null " +
+		"and t.completed_date is null " +
+		"and t.start_date between s.start_date and curdate()"
+
+	var plantsData []Task
+	tx := repo.db.Raw(query, userId).Find(&plantsData)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var plantsCoreAll []plants.TaskCore
+	for _, value := range plantsData {
+		plantCore := NewTaskCore(value)
+		plantsCoreAll = append(plantsCoreAll, plantCore)
+	}
+	return plantsCoreAll, nil
+}
+
+func (repo *plantQuery) UpdateTaskById(taskId uint64, input plants.TaskCore) error {
+	var plantGorm Task
+	tx := repo.db.First(&plantGorm, taskId)
+	if tx.Error != nil {
+		return errors.New("error template not found")
+	}
+
+	plantInputGorm := NewTaskModel(input)
+	tx = repo.db.Model(&plantGorm).Updates(plantInputGorm)
+	if tx.Error != nil {
+		return errors.New(tx.Error.Error() + "failed to update template")
+	}
+
+	return nil
 }

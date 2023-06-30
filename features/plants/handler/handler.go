@@ -95,3 +95,44 @@ func (handler *plantHandler) GetScheduleById(c echo.Context) error {
 	scheduleResponse := NewScheduleResponse(result)
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", scheduleResponse))
 }
+
+func (handler *plantHandler) GetTasksNotification(c echo.Context) error {
+	userId, _, errExtract := middlewares.ExtractToken(c)
+	if errExtract != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
+	}
+
+	results, err := handler.plantService.GetTasksNotification(userId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
+	}
+
+	var plantsResponse []TaskResponse
+	for _, value := range results {
+		plantsResponse = append(plantsResponse, NewTaskResponse(value))
+	}
+
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", plantsResponse))
+}
+
+func (handler *plantHandler) UpdateTaskById(c echo.Context) error {
+	paramId := c.Param("id")
+	taskId, errParse := strconv.ParseUint(paramId, 10, 64)
+	if errParse != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error parse data"))
+	}
+
+	plantInput := TaskRequest{}
+	errBind := c.Bind(&plantInput)
+	if errBind != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error bind data"))
+	}
+
+	plantCore := NewTaskRequest(plantInput)
+	err := handler.plantService.UpdateTaskById(taskId, plantCore)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, helpers.FailedResponse("error update data, "+err.Error()))
+	}
+
+	return c.JSON(http.StatusOK, helpers.SuccessResponse("success update data"))
+}

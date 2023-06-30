@@ -34,7 +34,8 @@ type PlantDataInterface interface {
 	SelectAllTasks(scheduleId uint64) ([]TaskCore, error)
 	SelectRecentTask(scheduleId uint64) (TaskCore, error)
 	SelectScheduleById(scheduleId uint64) (ScheduleCore, error)
-	// SelectScheduleNotifications(userId uint64) ([]ScheduleCore, error)
+	SelectTasksNotification(userId uint64) ([]TaskCore, error)
+	UpdateTaskById(taskId uint64, input TaskCore) error
 }
 
 type PlantServiceInterface interface {
@@ -42,4 +43,6 @@ type PlantServiceInterface interface {
 	GetAllSchedule() ([]ScheduleCore, error)
 	GetAllFarmerSchedule(farmerId uint64) ([]ScheduleCore, error)
 	GetScheduleById(scheduleId uint64) (ScheduleCore, error)
+	GetTasksNotification(userId uint64) ([]TaskCore, error)
+	UpdateTaskById(taskId uint64, input TaskCore) error
 }
