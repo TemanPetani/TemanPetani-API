@@ -103,6 +103,37 @@ func (repo *plantQuery) SelectAllTasks(scheduleId uint64) ([]plants.TaskCore, er
 	return plantsCoreAll, nil
 }
 
+func (repo *plantQuery) SelectScheduleNotifications(farmerId uint64) ([]plants.ScheduleCore, error) {
+	var plantsData []Schedule
+	tx := repo.db.Where("user_id = ?", farmerId).Find(&plantsData)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var plantsCoreAll []plants.ScheduleCore
+	for _, value := range plantsData {
+		plantCore := NewScheduleCore(value)
+		plantsCoreAll = append(plantsCoreAll, plantCore)
+	}
+	return plantsCoreAll, nil
+}
+
+func (repo *plantQuery) SelectRecentTask(scheduleId uint64) (plants.TaskCore, error) {
+	var plantsData Task
+	tx := repo.db.
+		Where("schedule_id = ?", scheduleId).
+		Where("start_date between start_date and curdate()").
+		Order("start_date desc").
+		First(&plantsData)
+	if tx.Error != nil {
+		return plants.TaskCore{}, tx.Error
+	}
+
+	plantCore := NewTaskCore(plantsData)
+
+	return plantCore, nil
+}
+
 func (repo *plantQuery) SelectScheduleById(id uint64) (plants.ScheduleCore, error) {
 	var plantGorm Schedule
 	tx := repo.db.First(&plantGorm, id)

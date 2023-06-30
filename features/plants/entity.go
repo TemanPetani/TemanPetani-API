@@ -32,7 +32,7 @@ type PlantDataInterface interface {
 	SelectAllSchedule() ([]ScheduleCore, error)
 	SelectAllFarmerSchedule(farmerId uint64) ([]ScheduleCore, error)
 	SelectAllTasks(scheduleId uint64) ([]TaskCore, error)
-	// SelectRecentTasks(scheduleId uint64) (TaskCore, error)
+	SelectRecentTask(scheduleId uint64) (TaskCore, error)
 	SelectScheduleById(scheduleId uint64) (ScheduleCore, error)
 	// SelectScheduleNotifications(userId uint64) ([]ScheduleCore, error)
 }

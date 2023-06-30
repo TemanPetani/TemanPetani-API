@@ -72,6 +72,14 @@ func (service *plantService) GetAllFarmerSchedule(farmerId uint64) ([]plants.Sch
 	if err != nil {
 		return nil, err
 	}
+
+	for i, value := range data {
+		task, errSelect := service.plantData.SelectRecentTask(value.ID)
+		if errSelect != nil {
+			return nil, errSelect
+		}
+		data[i].Tasks = append(data[i].Tasks, task)
+	}
 	return data, err
 }
 
