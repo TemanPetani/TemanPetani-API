@@ -7,7 +7,7 @@ import (
 type ScheduleTemplateResponse struct {
 	ID    uint64                  `json:"id,omitempty"`
 	Name  string                  `json:"name,omitempty"`
-	Tasks []TasksTemplateResponse `json:"tasks,omitempty"`
+	Tasks []TasksTemplateResponse `json:"activity,omitempty"`
 }
 
 type TasksTemplateResponse struct {
