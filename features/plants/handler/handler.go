@@ -5,6 +5,7 @@ import (
 	"alta/temanpetani/utils/helpers"
 	"alta/temanpetani/utils/middlewares"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -32,7 +33,7 @@ func (handler *plantHandler) CreateSchedule(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
 	}
 
-	plantCore := NewScheduleCore(plantInput)
+	plantCore := NewScheduleRequest(plantInput)
 	plantCore.Farmer.FarmerID = userId
 	err := handler.plantService.CreateSchedule(plantCore)
 	if err != nil {
@@ -44,4 +45,53 @@ func (handler *plantHandler) CreateSchedule(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("success insert data"))
+}
+
+func (handler *plantHandler) GetAllSchedule(c echo.Context) error {
+	results, err := handler.plantService.GetAllSchedule()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
+	}
+
+	var plantsResponse []FarmerScheduleResponse
+	for _, value := range results {
+		plantsResponse = append(plantsResponse, NewFarmerScheduleResponse(value))
+	}
+
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", plantsResponse))
+}
+
+func (handler *plantHandler) GetAllFarmerSchedule(c echo.Context) error {
+	userId, _, errExtract := middlewares.ExtractToken(c)
+	if errExtract != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
+	}
+
+	results, err := handler.plantService.GetAllFarmerSchedule(userId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
+	}
+
+	var plantsResponse []ScheduleResponse
+	for _, value := range results {
+		plantsResponse = append(plantsResponse, NewScheduleResponse(value))
+	}
+
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", plantsResponse))
+}
+
+func (handler *plantHandler) GetScheduleById(c echo.Context) error {
+	paramId := c.Param("id")
+	scheduleId, errParse := strconv.ParseUint(paramId, 10, 64)
+	if errParse != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error parse data"))
+	}
+
+	result, err := handler.plantService.GetScheduleById(scheduleId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
+	}
+
+	scheduleResponse := NewScheduleResponse(result)
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", scheduleResponse))
 }

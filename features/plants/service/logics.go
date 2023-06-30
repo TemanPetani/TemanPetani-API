@@ -74,3 +74,19 @@ func (service *plantService) GetAllFarmerSchedule(farmerId uint64) ([]plants.Sch
 	}
 	return data, err
 }
+
+func (service *plantService) GetScheduleById(id uint64) (plants.ScheduleCore, error) {
+	data, err := service.plantData.SelectScheduleById(id)
+	if err != nil {
+		return plants.ScheduleCore{}, err
+	}
+
+	tasks, err := service.plantData.SelectAllTasks(data.ID)
+	if err != nil {
+		return plants.ScheduleCore{}, err
+	}
+
+	data.Tasks = tasks
+
+	return data, err
+}

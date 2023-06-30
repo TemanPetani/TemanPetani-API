@@ -82,4 +82,7 @@ func initPlantsRouter(db *gorm.DB, e *echo.Echo) {
 	plantHandler := _plantHandler.New(plantService)
 
 	e.POST("/plants", plantHandler.CreateSchedule, middlewares.JWTMiddleware())
+	e.GET("/plants", plantHandler.GetAllSchedule, middlewares.JWTMiddleware())
+	e.GET("/plants/:id", plantHandler.GetScheduleById, middlewares.JWTMiddleware())
+	e.GET("/users/plants", plantHandler.GetAllFarmerSchedule, middlewares.JWTMiddleware())
 }

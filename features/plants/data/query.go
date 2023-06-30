@@ -54,9 +54,9 @@ func (repo *plantQuery) InsertTask(input []plants.TaskCore) error {
 }
 
 func (repo *plantQuery) SelectAllSchedule() ([]plants.ScheduleCore, error) {
-	query := ("select s.id as schedule_id, u.name as farmer_name, " +
-		"s.name as schedule_name from schedules as s inner join users " +
-		"as u on s.user_id = u.id")
+	query := ("select s.id as schedule_id, u.full_name as farmer_name, " +
+		"s.name as schedule_name from schedules as s inner join users as u " +
+		"on s.user_id = u.id where s.deleted_at is null order by s.updated_at desc")
 
 	var plantsData []FarmerSchedule
 	tx := repo.db.Raw(query).Scan(&plantsData)
@@ -86,4 +86,30 @@ func (repo *plantQuery) SelectAllFarmerSchedule(farmerId uint64) ([]plants.Sched
 		plantsCoreAll = append(plantsCoreAll, plantCore)
 	}
 	return plantsCoreAll, nil
+}
+
+func (repo *plantQuery) SelectAllTasks(scheduleId uint64) ([]plants.TaskCore, error) {
+	var plantsData []Task
+	tx := repo.db.Where("schedule_id = ?", scheduleId).Find(&plantsData)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var plantsCoreAll []plants.TaskCore
+	for _, value := range plantsData {
+		plantCore := NewTaskCore(value)
+		plantsCoreAll = append(plantsCoreAll, plantCore)
+	}
+	return plantsCoreAll, nil
+}
+
+func (repo *plantQuery) SelectScheduleById(id uint64) (plants.ScheduleCore, error) {
+	var plantGorm Schedule
+	tx := repo.db.First(&plantGorm, id)
+	if tx.Error != nil {
+		return plants.ScheduleCore{}, errors.New("error template not found")
+	}
+
+	plantCore := NewScheduleCore(plantGorm)
+	return plantCore, nil
 }

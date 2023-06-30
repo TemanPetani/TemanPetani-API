@@ -11,10 +11,20 @@ type ScheduleRequest struct {
 	StartDate  time.Time `json:"startDate" form:"startDate"`
 }
 
-func NewScheduleCore(plantRequest ScheduleRequest) plants.ScheduleCore {
+type TaskRequest struct {
+	CompletedDate time.Time `json:"completedDate" form:"completedDate"`
+}
+
+func NewScheduleRequest(request ScheduleRequest) plants.ScheduleCore {
 	return plants.ScheduleCore{
-		TemplateID: plantRequest.TemplateID,
-		Name:       plantRequest.Name,
-		StartDate:  plantRequest.StartDate,
+		TemplateID: request.TemplateID,
+		Name:       request.Name,
+		StartDate:  request.StartDate,
+	}
+}
+
+func NewTaskRequest(request TaskRequest) plants.TaskCore {
+	return plants.TaskCore{
+		CompletedDate: request.CompletedDate,
 	}
 }
