@@ -3,6 +3,7 @@ package service
 import (
 	"alta/temanpetani/features/plants"
 	"alta/temanpetani/features/templates"
+	"fmt"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -97,7 +98,8 @@ func (service *plantService) GetScheduleById(id uint64) (plants.ScheduleCore, er
 	}
 
 	data.Tasks = append(data.Tasks, tasks...)
-
+	fmt.Println("Service")
+	fmt.Println(data)
 	return data, err
 }
 

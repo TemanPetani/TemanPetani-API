@@ -3,6 +3,7 @@ package data
 import (
 	"alta/temanpetani/features/plants"
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -100,6 +101,8 @@ func (repo *plantQuery) SelectAllTasks(scheduleId uint64) ([]plants.TaskCore, er
 		plantCore := NewTaskCore(value)
 		plantsCoreAll = append(plantsCoreAll, plantCore)
 	}
+	fmt.Println("Query")
+	fmt.Println(plantsCoreAll)
 	return plantsCoreAll, nil
 }
 
