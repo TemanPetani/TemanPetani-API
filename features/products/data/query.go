@@ -59,6 +59,21 @@ func (repo *ProductData) SelectById(productId string) (*products.Core, error) {
 	return &productMap, nil
 }
 
+// SelectByUserId implements products.ProductDataInterface
+func (repo *ProductData) SelectByUserId(userId uint64) ([]products.Core, error) {
+	var allProducts []Products
+	if tx := repo.db.Where("user_id = ?", userId).Find(&allProducts); tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var allProductsMap []products.Core
+	for _, product := range allProducts {
+		productMap := ModelToProductCore(product)
+		allProductsMap = append(allProductsMap, productMap)
+	}
+	return allProductsMap, nil
+}
+
 // Update implements products.ProductDataInterface
 func (repo *ProductData) Update(productId string, data products.Core) error {
 	dataMap := CoreToProductModel(data)
@@ -84,7 +99,6 @@ func (repo *ProductData) VerifyProductOwner(productId string, owner uint) bool {
 	}
 	return false
 }
-
 
 // DeleteImage implements products.ProductDataInterface
 func (*ProductData) DeleteImage(productId string) error {

@@ -56,6 +56,15 @@ func (service *ProductService) GetAllProducts(querys map[string]any) ([]products
 	return allProducts, nil
 }
 
+// GetAllProducts implements products.ProductServiceInterface
+func (service *ProductService) GetProductsByUserId(userId uint64) ([]products.Core, error) {
+	allProducts, err := service.productData.SelectByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+	return allProducts, nil
+}
+
 // AddProduct implements products.ProductServiceInterface
 func (service *ProductService) AddProduct(data products.Core) (productId string, err error) {
 	if errValidator := service.validator.Struct(data); errValidator != nil {
