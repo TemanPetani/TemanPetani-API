@@ -96,7 +96,7 @@ func (service *plantService) GetScheduleById(id uint64) (plants.ScheduleCore, er
 		return plants.ScheduleCore{}, err
 	}
 
-	data.Tasks = tasks
+	data.Tasks = append(data.Tasks, tasks...)
 
 	return data, err
 }
