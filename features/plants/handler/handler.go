@@ -4,7 +4,6 @@ import (
 	"alta/temanpetani/features/plants"
 	"alta/temanpetani/utils/helpers"
 	"alta/temanpetani/utils/middlewares"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -92,12 +91,9 @@ func (handler *plantHandler) GetScheduleById(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
 	}
-	fmt.Println("Result")
-	fmt.Println(result)
 
 	scheduleResponse := NewScheduleResponse(result)
-	fmt.Println("Response")
-	fmt.Println(scheduleResponse)
+
 	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", scheduleResponse))
 }
 
