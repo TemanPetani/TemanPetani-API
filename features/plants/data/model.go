@@ -13,7 +13,7 @@ type Schedule struct {
 	ID         uint64    `gorm:"primarykey"`
 	UserID     uint64    `gorm:"notNull"`
 	TemplateID uint64    `gorm:"notNull"`
-	Name       string    `gorm:"unique;notNull"`
+	Name       string    `gorm:"notNull"`
 	StartDate  time.Time `gorm:"type:date;notNull"`
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
@@ -26,7 +26,7 @@ type Schedule struct {
 type Task struct {
 	ID            uint64    `gorm:"primarykey"`
 	ScheduleID    uint64    `gorm:"notNull"`
-	Name          string    `gorm:"unique;notNull"`
+	Name          string    `gorm:"notNull"`
 	StartDate     time.Time `gorm:"type:date;notNull"`
 	CompletedDate time.Time `gorm:"type:date;default:null"`
 	CreatedAt     time.Time
