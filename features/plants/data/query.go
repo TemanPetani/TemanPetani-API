@@ -111,7 +111,14 @@ func (repo *plantQuery) SelectRecentTask(scheduleId uint64) (plants.TaskCore, er
 		Order("start_date desc").
 		First(&plantsData)
 	if tx.Error != nil {
-		return plants.TaskCore{}, tx.Error
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			tx = repo.db.Where("schedule_id = ?", scheduleId).First(&plantsData)
+			if tx.Error != nil {
+				return plants.TaskCore{}, tx.Error
+			}
+		} else {
+			return plants.TaskCore{}, tx.Error
+		}
 	}
 
 	plantCore := NewTaskCore(plantsData)
