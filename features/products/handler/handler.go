@@ -16,19 +16,19 @@ type UserHandler struct {
 func (handler *UserHandler) PostProductHandler(c echo.Context) error {
 	var payload products.Core
 	if errBind := c.Bind(&payload); errBind != nil {
-		return helpers.StatusBadRequestResponse(c, "error bind payload: " + errBind.Error())
+		return helpers.StatusBadRequestResponse(c, "error bind payload: "+errBind.Error())
 	}
-	file, err := c.FormFile("image");
+	file, err := c.FormFile("image")
 	if err != nil {
-		return helpers.StatusBadRequestResponse(c, "error get file image: " + err.Error())
+		return helpers.StatusBadRequestResponse(c, "error get file image: "+err.Error())
 	}
 	payload.Image = file
 
 	userId, _, errExtractUserId := middlewares.ExtractToken(c)
 	if errExtractUserId != nil {
-		return helpers.StatusAuthorizationErrorResponse(c, "error get user id: " + errExtractUserId.Error())
+		return helpers.StatusAuthorizationErrorResponse(c, "error get user id: "+errExtractUserId.Error())
 	}
-	payload.UserID = uint(userId)
+	payload.UserID = userId
 
 	productId, err := handler.productService.AddProduct(payload)
 	if err != nil {
@@ -40,7 +40,7 @@ func (handler *UserHandler) PostProductHandler(c echo.Context) error {
 	}
 	if productId != "" {
 		return helpers.StatusCreated(c, "Berhasil menambahkan product", map[string]any{
-			"productId": productId, 
+			"productId": productId,
 		})
 	}
 	return nil
@@ -49,9 +49,9 @@ func (handler *UserHandler) PostProductHandler(c echo.Context) error {
 func (handler *UserHandler) PutImageProductHandler(c echo.Context) error {
 	var payload products.CoreProductImageRequest
 	productId := c.Param("id")
-	file, err := c.FormFile("image");
+	file, err := c.FormFile("image")
 	if err != nil {
-		return helpers.StatusBadRequestResponse(c, "error get file image: " + err.Error())
+		return helpers.StatusBadRequestResponse(c, "error get file image: "+err.Error())
 	}
 	payload.Image = file
 
@@ -80,6 +80,21 @@ func (handler *UserHandler) GetAllProductsHandler(c echo.Context) error {
 	}
 
 	products, err := handler.productService.GetAllProducts(querys)
+	if err != nil {
+		return helpers.StatusInternalServerError(c, err.Error())
+	}
+	return helpers.StatusOKWithData(c, "Berhasil mendapatkan sejumlah produk", map[string]any{
+		"products": products,
+	})
+}
+
+func (handler *UserHandler) GetProductsByUserIdHandler(c echo.Context) error {
+	userId, _, errExtract := middlewares.ExtractToken(c)
+	if errExtract != nil {
+		return helpers.StatusBadRequestResponse(c, errExtract.Error())
+	}
+
+	products, err := handler.productService.GetProductsByUserId(userId)
 	if err != nil {
 		return helpers.StatusInternalServerError(c, err.Error())
 	}

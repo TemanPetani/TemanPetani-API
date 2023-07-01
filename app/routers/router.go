@@ -56,6 +56,7 @@ func initProductRouter(db *gorm.DB, e *echo.Echo) {
 
 	e.POST("/products", productHandler.PostProductHandler, middlewares.JWTMiddleware())
 	e.GET("/products", productHandler.GetAllProductsHandler)
+	e.GET("/users/products", productHandler.GetProductsByUserIdHandler, middlewares.JWTMiddleware())
 	e.PUT("/products/:id/images", productHandler.PutImageProductHandler, middlewares.JWTMiddleware())
 
 }

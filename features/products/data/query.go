@@ -13,7 +13,7 @@ type ProductData struct {
 
 // Insert implements products.ProductDataInterface
 func (repo *ProductData) Insert(data products.Core) (productId string, err error) {
-	data.ID = helpers.GenerateNewId();
+	data.ID = helpers.GenerateNewId()
 
 	mapData := CoreToProductModel(data)
 	if tx := repo.db.Create(&mapData); tx.Error != nil {
@@ -60,8 +60,22 @@ func (repo *ProductData) UpdateImage(productId string, image products.CoreProduc
 }
 
 // SelectById implements products.ProductDataInterface
-func (*ProductData) SelectById(productId string) (product products.Core, err error) {
+func (repo *ProductData) SelectById(productId string) (product products.Core, err error) {
 	panic("unimplemented")
+}
+
+func (repo *ProductData) SelectByUserId(userId uint64) ([]products.Core, error) {
+	var allProducts []Products
+	if tx := repo.db.Where("user_id = ?", userId).Find(&allProducts); tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	var allProductsMap []products.Core
+	for _, product := range allProducts {
+		productMap := ModelToProductCore(product)
+		allProductsMap = append(allProductsMap, productMap)
+	}
+	return allProductsMap, nil
 }
 
 // Update implements products.ProductDataInterface
