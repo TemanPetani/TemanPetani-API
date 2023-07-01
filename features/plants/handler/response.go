@@ -27,16 +27,8 @@ type FarmerScheduleResponse struct {
 
 func NewScheduleResponse(plant plants.ScheduleCore) ScheduleResponse {
 	var tasksResponse []TaskResponse
-	for i, value := range plant.Tasks {
-		tasksResponse = append(tasksResponse, TaskResponse{
-			ID:            value.ID,
-			Name:          value.Name,
-			StartDate:     value.StartDate,
-			CompletedDate: &value.CompletedDate,
-		})
-		if tasksResponse[i].CompletedDate.IsZero() {
-			tasksResponse[i].CompletedDate = nil
-		}
+	for _, value := range plant.Tasks {
+		tasksResponse = append(tasksResponse, NewTaskResponse(value))
 	}
 
 	return ScheduleResponse{
