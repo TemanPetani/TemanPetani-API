@@ -7,7 +7,7 @@ type UserCore struct {
 	FullName      string `validate:"required"`
 	Email         string `validate:"required,email"`
 	Phone         string `validate:"required"`
-	Password      string `validate:"required,min=8"`
+	Password      string `validate:"required"`
 	Role          string
 	Address       string
 	Avatar        string

@@ -37,6 +37,18 @@ func (service *userService) Create(input users.UserCore) error {
 		return errValidate
 	}
 
+	errPasword := helpers.ValidatePassword(input.Password)
+	if errPasword != nil {
+		return errPasword
+	}
+
+	hashedPassword, errHash := helpers.HashPassword(input.Password)
+	if errHash != nil {
+		return errHash
+	}
+
+	input.Password = hashedPassword
+
 	errInsert := service.userData.Insert(input)
 	if errInsert != nil {
 		return errInsert
@@ -54,6 +66,20 @@ func (service *userService) GetById(id uint64) (users.UserCore, error) {
 }
 
 func (service *userService) UpdateById(id uint64, input users.UserCore) error {
+	if input.Password != "" {
+		errPasword := helpers.ValidatePassword(input.Password)
+		if errPasword != nil {
+			return errPasword
+		}
+
+		hashedPassword, errHash := helpers.HashPassword(input.Password)
+		if errHash != nil {
+			return errHash
+		}
+
+		input.Password = hashedPassword
+	}
+
 	errUpdate := service.userData.UpdateById(id, input)
 	if errUpdate != nil {
 		return errUpdate
