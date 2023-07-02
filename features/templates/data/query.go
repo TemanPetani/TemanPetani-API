@@ -26,7 +26,7 @@ func (repo *templateQuery) InsertSchedule(input templates.ScheduleTemplateCore) 
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("insert failed, row affected = 0")
+		return errors.New("Gagal Menambahkan Data Template")
 	}
 
 	return nil
@@ -41,7 +41,7 @@ func (repo *templateQuery) InsertTask(input templates.TaskTemplateCore) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("insert failed, row affected = 0")
+		return errors.New("Gagal Menambahkan Data Template")
 	}
 
 	return nil
@@ -55,7 +55,7 @@ func (repo *templateQuery) SelectAllSchedule() ([]templates.ScheduleTemplateCore
 	}
 
 	if tx.RowsAffected == 0 {
-		return nil, errors.New("error templates not found")
+		return nil, errors.New("Data Template Tidak Ditemukan")
 	}
 
 	var templatesCoreAll []templates.ScheduleTemplateCore
@@ -85,7 +85,7 @@ func (repo *templateQuery) SelectScheduleById(id uint64) (templates.ScheduleTemp
 	var templateGorm ScheduleTemplate
 	tx := repo.db.First(&templateGorm, id)
 	if tx.Error != nil {
-		return templates.ScheduleTemplateCore{}, errors.New("error template not found")
+		return templates.ScheduleTemplateCore{}, errors.New("Data Template Tidak Ditemukan")
 	}
 
 	templateCore := NewScheduleTemplateCore(templateGorm)
@@ -96,17 +96,17 @@ func (repo *templateQuery) UpdateScheduleById(id uint64, input templates.Schedul
 	var templateGorm ScheduleTemplate
 	tx := repo.db.First(&templateGorm, id)
 	if tx.Error != nil {
-		return errors.New("error template not found")
+		return errors.New("Data Template Tidak Ditemukan")
 	}
 
 	templateInputGorm := NewScheduleTemplateModel(input)
 	tx = repo.db.Model(&templateGorm).Updates(templateInputGorm)
 	if tx.Error != nil {
-		return errors.New(tx.Error.Error() + "failed to update template")
+		return errors.New(tx.Error.Error())
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("error users not found")
+		return errors.New("Gagal Memperbarui Data Template")
 	}
 
 	return nil
@@ -116,16 +116,16 @@ func (repo *templateQuery) DeleteScheduleById(id uint64) error {
 	var templateGorm ScheduleTemplate
 	tx := repo.db.First(&templateGorm, id)
 	if tx.Error != nil {
-		return errors.New("error template not found")
+		return errors.New("Data Template Tidak Ditemukan")
 	}
 
 	tx = repo.db.Delete(&templateGorm, id)
 	if tx.Error != nil {
-		return errors.New(tx.Error.Error() + "failed to delete template")
+		return errors.New(tx.Error.Error())
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("error users not found")
+		return errors.New("Gagal Menghapus Data Template")
 	}
 
 	return nil
@@ -135,17 +135,17 @@ func (repo *templateQuery) UpdateTaskById(id uint64, input templates.TaskTemplat
 	var templateGorm TaskTemplate
 	tx := repo.db.First(&templateGorm, id)
 	if tx.Error != nil {
-		return errors.New("error template not found")
+		return errors.New("Data Template Tidak Ditemukan")
 	}
 
 	templateInputGorm := NewTaskTemplateModel(input)
 	tx = repo.db.Model(&templateGorm).Updates(templateInputGorm)
 	if tx.Error != nil {
-		return errors.New(tx.Error.Error() + "failed to update template")
+		return errors.New(tx.Error.Error())
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("error users not found")
+		return errors.New("Gagal Memperbarui Data Template")
 	}
 
 	return nil
@@ -155,16 +155,16 @@ func (repo *templateQuery) DeleteTaskById(id uint64) error {
 	var templateGorm TaskTemplate
 	tx := repo.db.First(&templateGorm, id)
 	if tx.Error != nil {
-		return errors.New("error template not found")
+		return errors.New("Data Template Tidak Ditemukan")
 	}
 
 	tx = repo.db.Delete(&templateGorm, id)
 	if tx.Error != nil {
-		return errors.New(tx.Error.Error() + "failed to delete template")
+		return errors.New(tx.Error.Error())
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("error users not found")
+		return errors.New("Gagal Menghapus Data Template")
 	}
 
 	return nil

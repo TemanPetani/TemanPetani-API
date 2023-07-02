@@ -25,12 +25,12 @@ func (handler *plantHandler) CreateSchedule(c echo.Context) error {
 	plantInput := ScheduleRequest{}
 	errBind := c.Bind(&plantInput)
 	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error bind data"))
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(errBind.Error()))
 	}
 
 	userId, _, errExtract := middlewares.ExtractToken(c)
 	if errExtract != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(errExtract.Error()))
 	}
 
 	plantCore := NewScheduleRequest(plantInput)
@@ -40,17 +40,17 @@ func (handler *plantHandler) CreateSchedule(c echo.Context) error {
 		if strings.Contains(err.Error(), "validation") {
 			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
 		} else {
-			return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error insert data, "+err.Error()))
+			return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
 		}
 	}
 
-	return c.JSON(http.StatusOK, helpers.SuccessResponse("success insert data"))
+	return c.JSON(http.StatusCreated, helpers.SuccessResponse("Berhasil Membuat Tanaman"))
 }
 
 func (handler *plantHandler) GetAllSchedule(c echo.Context) error {
 	results, err := handler.plantService.GetAllSchedule()
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
 	}
 
 	var plantsResponse []FarmerScheduleResponse
@@ -58,18 +58,18 @@ func (handler *plantHandler) GetAllSchedule(c echo.Context) error {
 		plantsResponse = append(plantsResponse, NewFarmerScheduleResponse(value))
 	}
 
-	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", plantsResponse))
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("Berhasil Mendapatkan Data Tanaman", plantsResponse))
 }
 
 func (handler *plantHandler) GetAllFarmerSchedule(c echo.Context) error {
 	userId, _, errExtract := middlewares.ExtractToken(c)
 	if errExtract != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(errExtract.Error()))
 	}
 
 	results, err := handler.plantService.GetAllFarmerSchedule(userId)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
 	}
 
 	var plantsResponse []ScheduleResponse
@@ -77,35 +77,35 @@ func (handler *plantHandler) GetAllFarmerSchedule(c echo.Context) error {
 		plantsResponse = append(plantsResponse, NewScheduleResponse(value))
 	}
 
-	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", plantsResponse))
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("Berhasil Mendapatkan Data Tanaman", plantsResponse))
 }
 
 func (handler *plantHandler) GetScheduleById(c echo.Context) error {
 	paramId := c.Param("id")
 	scheduleId, errParse := strconv.ParseUint(paramId, 10, 64)
 	if errParse != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error parse data"))
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(errParse.Error()))
 	}
 
 	result, err := handler.plantService.GetScheduleById(scheduleId)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
 	}
 
 	scheduleResponse := NewScheduleResponse(result)
 
-	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", scheduleResponse))
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("Berhasil Mendapatkan Data Tanaman", scheduleResponse))
 }
 
 func (handler *plantHandler) GetTasksNotification(c echo.Context) error {
 	userId, _, errExtract := middlewares.ExtractToken(c)
 	if errExtract != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(errExtract.Error()))
 	}
 
 	results, err := handler.plantService.GetTasksNotification(userId)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error read data, "+err.Error()))
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
 	}
 
 	var plantsResponse []TaskResponse
@@ -113,41 +113,41 @@ func (handler *plantHandler) GetTasksNotification(c echo.Context) error {
 		plantsResponse = append(plantsResponse, NewTaskResponse(value))
 	}
 
-	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("success read data", plantsResponse))
+	return c.JSON(http.StatusOK, helpers.SuccessWithDataResponse("Berhasil Mendapatkan Data Notifikasi", plantsResponse))
 }
 
 func (handler *plantHandler) UpdateTaskById(c echo.Context) error {
 	paramId := c.Param("id")
 	taskId, errParse := strconv.ParseUint(paramId, 10, 64)
 	if errParse != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error parse data"))
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(errParse.Error()))
 	}
 
 	plantInput := TaskRequest{}
 	errBind := c.Bind(&plantInput)
 	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error bind data"))
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(errBind.Error()))
 	}
 
 	plantCore := NewTaskRequest(plantInput)
 	err := handler.plantService.UpdateTaskById(taskId, plantCore)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, helpers.FailedResponse("error update data, "+err.Error()))
+		return c.JSON(http.StatusNotFound, helpers.FailedResponse(err.Error()))
 	}
 
-	return c.JSON(http.StatusOK, helpers.SuccessResponse("success update data"))
+	return c.JSON(http.StatusOK, helpers.SuccessResponse("Berhasil Memperbarui Data Tanaman"))
 }
 
 func (handler *plantHandler) DeleteScheduleById(c echo.Context) error {
 	paramId := c.Param("id")
 	scheduleId, errParse := strconv.ParseUint(paramId, 10, 64)
 	if errParse != nil {
-		return c.JSON(http.StatusBadRequest, helpers.FailedResponse("error parse data"))
+		return c.JSON(http.StatusBadRequest, helpers.FailedResponse(errParse.Error()))
 	}
 
 	err := handler.plantService.DeleteScheduleById(scheduleId)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, helpers.FailedResponse("error delete data, "+err.Error()))
+		return c.JSON(http.StatusNotFound, helpers.FailedResponse(err.Error()))
 	}
-	return c.JSON(http.StatusOK, helpers.SuccessResponse("success delete data"))
+	return c.JSON(http.StatusOK, helpers.SuccessResponse("Berhasil Menghapus Data Tanaman"))
 }

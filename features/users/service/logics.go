@@ -25,7 +25,7 @@ func New(repo users.UserDataInterface) users.UserServiceInterface {
 
 func (service *userService) Login(email string, password string) (users.UserCore, string, error) {
 	if email == "" || password == "" {
-		return users.UserCore{}, "", errors.New("error validation: email or password cannot be empty")
+		return users.UserCore{}, "", errors.New("Email dan Password Harus Diisi")
 	}
 	dataLogin, token, err := service.userData.Login(email, password)
 	return dataLogin, token, err
@@ -74,7 +74,7 @@ func (service *userService) DeleteById(id uint64) error {
 func (service *userService) UpdateImage(id uint64, image *multipart.FileHeader) error {
 	newImage, errGetImage := image.Open()
 	if errGetImage != nil {
-		return errors.New("failed to open file: " + errGetImage.Error())
+		return errors.New(errGetImage.Error())
 	}
 	defer newImage.Close()
 
@@ -86,7 +86,7 @@ func (service *userService) UpdateImage(id uint64, image *multipart.FileHeader) 
 	})
 
 	if errUpload != nil {
-		return errors.New("failed to upload file image: " + errUpload.Error())
+		return errors.New(errUpload.Error())
 	}
 
 	imageUrl := "https://alta-airbnb.s3.ap-southeast-3.amazonaws.com/" + imageKey

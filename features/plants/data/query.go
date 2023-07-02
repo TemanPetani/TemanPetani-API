@@ -26,7 +26,7 @@ func (repo *plantQuery) InsertSchedule(input plants.ScheduleCore) (plants.Schedu
 	}
 
 	if tx.RowsAffected == 0 {
-		return plants.ScheduleCore{}, errors.New("insert failed, row affected = 0")
+		return plants.ScheduleCore{}, errors.New("Gagal Menambahkan Data Tanaman")
 	}
 
 	scheduleData := NewScheduleCore(plantInputGorm)
@@ -47,7 +47,7 @@ func (repo *plantQuery) InsertTask(input []plants.TaskCore) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("insert failed, row affected = 0")
+		return errors.New("Gagal Menambahkan Data Tanaman")
 	}
 
 	return nil
@@ -131,7 +131,7 @@ func (repo *plantQuery) SelectScheduleById(id uint64) (plants.ScheduleCore, erro
 	var plantGorm Schedule
 	tx := repo.db.First(&plantGorm, id)
 	if tx.Error != nil {
-		return plants.ScheduleCore{}, errors.New("error template not found")
+		return plants.ScheduleCore{}, tx.Error
 	}
 
 	plantCore := NewScheduleCore(plantGorm)
@@ -165,17 +165,17 @@ func (repo *plantQuery) UpdateTaskById(taskId uint64, input plants.TaskCore) err
 	var plantGorm Task
 	tx := repo.db.First(&plantGorm, taskId)
 	if tx.Error != nil {
-		return errors.New("error template not found")
+		return tx.Error
 	}
 
 	plantInputGorm := NewTaskModel(input)
 	tx = repo.db.Model(&plantGorm).Updates(plantInputGorm)
 	if tx.Error != nil {
-		return errors.New(tx.Error.Error() + "failed to update template")
+		return errors.New(tx.Error.Error())
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("error users not found")
+		return errors.New("Gagal Memperbarui Data Pengguna")
 	}
 
 	return nil
@@ -185,22 +185,22 @@ func (repo *plantQuery) DeleteScheduleById(scheduleId uint64) error {
 	var scheduleGorm Schedule
 	tx := repo.db.First(&scheduleGorm, scheduleId)
 	if tx.Error != nil {
-		return errors.New("error template not found")
+		return tx.Error
 	}
 
 	tx = repo.db.Delete(&scheduleGorm, scheduleId)
 	if tx.Error != nil {
-		return errors.New(tx.Error.Error() + "failed to delete template")
+		return tx.Error
 	}
 
 	var taskGorm Task
 	tx = repo.db.Where("schedule_id = ?", scheduleId).Delete(&taskGorm)
 	if tx.Error != nil {
-		return errors.New(tx.Error.Error() + "failed to delete template")
+		return tx.Error
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("error users not found")
+		return errors.New("Gagal Memperbarui Data Pengguna")
 	}
 
 	return nil
