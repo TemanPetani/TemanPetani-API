@@ -45,14 +45,7 @@ func (repo *userQuery) Login(email string, password string) (users.UserCore, str
 }
 
 func (repo *userQuery) Insert(input users.UserCore) error {
-	hashedPassword, errHash := helpers.HashPassword(input.Password)
-	if errHash != nil {
-		return errHash
-	}
-
 	userInputGorm := NewUserModel(input)
-	userInputGorm.Password = hashedPassword
-
 	tx := repo.db.Create(&userInputGorm)
 	if tx.Error != nil {
 		return tx.Error
@@ -84,14 +77,6 @@ func (repo *userQuery) UpdateById(id uint64, input users.UserCore) error {
 	}
 
 	userInputGorm := NewUserModel(input)
-	if userInputGorm.Password != "" {
-		hashedPassword, errHash := helpers.HashPassword(userInputGorm.Password)
-		if errHash != nil {
-			return errHash
-		}
-		userInputGorm.Password = hashedPassword
-	}
-
 	tx = repo.db.Model(&userGorm).Updates(userInputGorm)
 	if tx.Error != nil {
 		return tx.Error

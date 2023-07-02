@@ -29,9 +29,9 @@ func (handler *UserHandler) Login(c echo.Context) error {
 
 	dataLogin, token, err := handler.userService.Login(loginInput.Email, loginInput.Password)
 	if err != nil {
-		if strings.Contains(err.Error(), "login failed") {
+		if strings.Contains(err.Error(), "Email") {
 			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
-		} else if strings.Contains(err.Error(), "validation") {
+		} else if strings.Contains(err.Error(), "Password") {
 			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
 		} else {
 			return c.JSON(http.StatusInternalServerError, helpers.FailedResponse(err.Error()))
@@ -53,6 +53,8 @@ func (handler *UserHandler) CreateUser(c echo.Context) error {
 	err := handler.userService.Create(userCore)
 	if err != nil {
 		if strings.Contains(err.Error(), "validation") {
+			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
+		} else if strings.Contains(err.Error(), "Password") {
 			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
 		} else if strings.Contains(err.Error(), "Duplicate") {
 			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
@@ -94,7 +96,13 @@ func (handler *UserHandler) UpdateUserById(c echo.Context) error {
 	userCore := UserRequestToCore(userInput)
 	err := handler.userService.UpdateById(userId, userCore)
 	if err != nil {
-		return c.JSON(http.StatusNotFound, helpers.FailedResponse(err.Error()))
+		if strings.Contains(err.Error(), "Password") {
+			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
+		} else if strings.Contains(err.Error(), "Duplicate") {
+			return c.JSON(http.StatusBadRequest, helpers.FailedResponse(err.Error()))
+		} else {
+			return c.JSON(http.StatusNotFound, helpers.FailedResponse(err.Error()))
+		}
 	}
 
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("Berhasil Memperbarui Data Pengguna"))
