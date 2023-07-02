@@ -110,3 +110,22 @@ func (handler *UserHandler) DeleteUserById(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, helpers.SuccessResponse("success delete data"))
 }
+
+func (handler *UserHandler) UpdateUserPicture(c echo.Context) error {
+	userId, _, errExtract := middlewares.ExtractToken(c)
+	if errExtract != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.FailedResponse("error read data, "+errExtract.Error()))
+	}
+
+	picture, err := c.FormFile("picture")
+	if err != nil {
+		return helpers.StatusBadRequestResponse(c, "error get file image: "+err.Error())
+	}
+
+	errUpdate := handler.userService.UpdateImage(userId, picture)
+	if errUpdate != nil {
+		return helpers.StatusInternalServerError(c, errUpdate.Error())
+	}
+
+	return c.JSON(http.StatusOK, helpers.SuccessResponse("success update data"))
+}

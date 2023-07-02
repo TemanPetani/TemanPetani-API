@@ -2,8 +2,12 @@ package service
 
 import (
 	"alta/temanpetani/features/users"
+	"alta/temanpetani/utils/helpers"
 	"errors"
+	"mime/multipart"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -62,6 +66,33 @@ func (service *userService) DeleteById(id uint64) error {
 	errUpdate := service.userData.DeleteById(id)
 	if errUpdate != nil {
 		return errUpdate
+	}
+
+	return nil
+}
+
+func (service *userService) UpdateImage(id uint64, image *multipart.FileHeader) error {
+	newImage, errGetImage := image.Open()
+	if errGetImage != nil {
+		return errors.New("failed to open file: " + errGetImage.Error())
+	}
+	defer newImage.Close()
+
+	imageKey := helpers.GenerateNewId() + "_" + image.Filename
+	_, errUpload := helpers.UploaderS3().PutObject(&s3.PutObjectInput{
+		Bucket: aws.String("alta-airbnb"),
+		Key:    aws.String(imageKey),
+		Body:   newImage,
+	})
+
+	if errUpload != nil {
+		return errors.New("failed to upload file image: " + errUpload.Error())
+	}
+
+	imageUrl := "https://alta-airbnb.s3.ap-southeast-3.amazonaws.com/" + imageKey
+	errInsert := service.userData.UpdateImage(id, imageUrl)
+	if errInsert != nil {
+		return errInsert
 	}
 
 	return nil

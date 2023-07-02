@@ -104,6 +104,17 @@ func (repo *userQuery) UpdateById(id uint64, input users.UserCore) error {
 	return nil
 }
 
+func (repo *userQuery) UpdateImage(id uint64, imageUrl string) error {
+	var userGorm User
+
+	tx := repo.db.Model(&userGorm).Where("id = ?", id).Update("avatar", imageUrl)
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
+}
+
 func (repo *userQuery) DeleteById(id uint64) error {
 	var userGorm User
 	tx := repo.db.First(&userGorm, id)

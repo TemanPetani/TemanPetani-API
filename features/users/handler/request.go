@@ -1,6 +1,8 @@
 package handler
 
-import "alta/temanpetani/features/users"
+import (
+	"alta/temanpetani/features/users"
+)
 
 type AuthRequest struct {
 	Email    string `json:"email" form:"email"`
@@ -14,7 +16,6 @@ type UserRequest struct {
 	Password      string `json:"password" form:"password"`
 	Role          string `json:"role" form:"role"`
 	Address       string `json:"address" form:"address"`
-	Avatar        string `json:"avatar" form:"avatar"`
 	Bank          string `json:"bank" form:"bank"`
 	AccountNumber string `json:"accountNumber" form:"accountNumber"`
 }
@@ -27,7 +28,6 @@ func UserRequestToCore(userRequest UserRequest) users.UserCore {
 		Phone:         userRequest.Phone,
 		Role:          userRequest.Role,
 		Address:       userRequest.Address,
-		Avatar:        userRequest.Avatar,
 		Bank:          userRequest.Bank,
 		AccountNumber: userRequest.AccountNumber,
 	}
