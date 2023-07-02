@@ -174,6 +174,10 @@ func (repo *plantQuery) UpdateTaskById(taskId uint64, input plants.TaskCore) err
 		return errors.New(tx.Error.Error() + "failed to update template")
 	}
 
+	if tx.RowsAffected == 0 {
+		return errors.New("error users not found")
+	}
+
 	return nil
 }
 
@@ -193,6 +197,10 @@ func (repo *plantQuery) DeleteScheduleById(scheduleId uint64) error {
 	tx = repo.db.Where("schedule_id = ?", scheduleId).Delete(&taskGorm)
 	if tx.Error != nil {
 		return errors.New(tx.Error.Error() + "failed to delete template")
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New("error users not found")
 	}
 
 	return nil

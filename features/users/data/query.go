@@ -97,6 +97,10 @@ func (repo *userQuery) UpdateById(id uint64, input users.UserCore) error {
 		return errors.New(tx.Error.Error() + "failed to update user")
 	}
 
+	if tx.RowsAffected == 0 {
+		return errors.New("error users not found")
+	}
+
 	return nil
 }
 
@@ -110,6 +114,10 @@ func (repo *userQuery) DeleteById(id uint64) error {
 	tx = repo.db.Delete(&userGorm, id)
 	if tx.Error != nil {
 		return errors.New(tx.Error.Error() + "failed to delete user")
+	}
+
+	if tx.RowsAffected == 0 {
+		return errors.New("error users not found")
 	}
 
 	return nil
