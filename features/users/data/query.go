@@ -24,7 +24,7 @@ func (repo *userQuery) Login(email string, password string) (users.UserCore, str
 	tx := repo.db.Where("email = ?", email).First(&userGorm)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return users.UserCore{}, "", errors.New("login failed, wrong email and password")
+			return users.UserCore{}, "", errors.New("Email dan Password Salah")
 		} else {
 			return users.UserCore{}, "", tx.Error
 		}
@@ -32,7 +32,7 @@ func (repo *userQuery) Login(email string, password string) (users.UserCore, str
 
 	checkPassword := helpers.CheckPasswordHash(password, userGorm.Password)
 	if !checkPassword {
-		return users.UserCore{}, "", errors.New("login failed, wrong password")
+		return users.UserCore{}, "", errors.New("Password Salah")
 	}
 
 	token, errToken := middlewares.CreateToken(userGorm.ID, userGorm.Role)
@@ -47,7 +47,7 @@ func (repo *userQuery) Login(email string, password string) (users.UserCore, str
 func (repo *userQuery) Insert(input users.UserCore) error {
 	hashedPassword, errHash := helpers.HashPassword(input.Password)
 	if errHash != nil {
-		return errors.New("error hash password")
+		return errHash
 	}
 
 	userInputGorm := NewUserModel(input)
@@ -59,7 +59,7 @@ func (repo *userQuery) Insert(input users.UserCore) error {
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("insert failed, row affected = 0")
+		return errors.New("Gagal Menambahkan Data Pengguna")
 	}
 
 	return nil
@@ -69,7 +69,7 @@ func (repo *userQuery) SelectById(id uint64) (users.UserCore, error) {
 	var userGorm User
 	tx := repo.db.First(&userGorm, id)
 	if tx.Error != nil {
-		return users.UserCore{}, errors.New("error user not found")
+		return users.UserCore{}, errors.New("Pengguna Tidak Ditemukan")
 	}
 
 	userCore := NewUserCore(userGorm)
@@ -80,25 +80,25 @@ func (repo *userQuery) UpdateById(id uint64, input users.UserCore) error {
 	var userGorm User
 	tx := repo.db.First(&userGorm, id)
 	if tx.Error != nil {
-		return errors.New("error user not found")
+		return errors.New("Pengguna Tidak Ditemukan")
 	}
 
 	userInputGorm := NewUserModel(input)
 	if userInputGorm.Password != "" {
 		hashedPassword, errHash := helpers.HashPassword(userInputGorm.Password)
 		if errHash != nil {
-			return errors.New("error hash password")
+			return errHash
 		}
 		userInputGorm.Password = hashedPassword
 	}
 
 	tx = repo.db.Model(&userGorm).Updates(userInputGorm)
 	if tx.Error != nil {
-		return errors.New(tx.Error.Error() + "failed to update user")
+		return tx.Error
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("error users not found")
+		return errors.New("Gagal Memperbarui Data Pengguna")
 	}
 
 	return nil
@@ -119,16 +119,16 @@ func (repo *userQuery) DeleteById(id uint64) error {
 	var userGorm User
 	tx := repo.db.First(&userGorm, id)
 	if tx.Error != nil {
-		return errors.New("error user not found")
+		return errors.New("Pengguna Tidak Ditemukan")
 	}
 
 	tx = repo.db.Delete(&userGorm, id)
 	if tx.Error != nil {
-		return errors.New(tx.Error.Error() + "failed to delete user")
+		return tx.Error
 	}
 
 	if tx.RowsAffected == 0 {
-		return errors.New("error users not found")
+		return errors.New("Pengguna Tidak Ditemukan")
 	}
 
 	return nil
