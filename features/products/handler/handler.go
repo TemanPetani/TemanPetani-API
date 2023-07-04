@@ -4,7 +4,6 @@ import (
 	"alta/temanpetani/features/products"
 	"alta/temanpetani/utils/helpers"
 	"alta/temanpetani/utils/middlewares"
-	"fmt"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -83,12 +82,7 @@ func (handler *UserHandler) GetAllProductsHandler(c echo.Context) error {
 	if owner != "" {
 		querys["owner"] = owner
 	}
-	userId, _, errExtractUserId := middlewares.ExtractToken(c)
-	if errExtractUserId != nil {
-		return helpers.StatusAuthorizationErrorResponse(c, "error get user id: "+errExtractUserId.Error())
-	}
-	fmt.Println(userId)
-	querys["userId"] = userId
+
 	products, err := handler.productService.GetAllProducts(querys)
 	if err != nil {
 		return helpers.StatusInternalServerError(c, err.Error())
