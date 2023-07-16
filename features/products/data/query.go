@@ -38,12 +38,6 @@ func (repo *ProductData) Select(querys map[string]any) ([]products.Core, error) 
 			} else if querys["role"] == "user" && productMap.User.Role == "admin" {
 				allProductsMap = append(allProductsMap, productMap)
 			}
-		} else if querys["owner"] != nil {
-			if querys["owner"] == "admin" && productMap.User.Role == "admin" {
-				allProductsMap = append(allProductsMap, productMap)
-			} else if productMap.User.ID == querys["userId"] {
-				allProductsMap = append(allProductsMap, productMap)
-			}
 		}
 	}
 	return allProductsMap, nil
