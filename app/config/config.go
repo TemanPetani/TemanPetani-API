@@ -67,7 +67,7 @@ func ReadEnv() *AppConfig {
 
 	if !isRead {
 		viper.AddConfigPath(".")
-		viper.SetConfigName("local")
+		viper.SetConfigName(".local")
 		viper.SetConfigType("env")
 
 		if err := viper.ReadInConfig(); err != nil {
